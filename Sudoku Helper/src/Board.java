@@ -9,11 +9,12 @@ import javax.swing.JLabel;
 
 public abstract class Board extends JFrame implements ActionListener, Methods {
 	int NumberofBlocks;
-	JLabel[] Block;
+	Sudoku_Block[] Block;
 	int border_right, border_left, border_top, border_bottom;
 	Candidates Candidate;
 	Hint hint;
-	Hint_Label hint_label;
+	Info info;
+	Mistakes Mistake;
 	
 	Board(int NumberofBlocks) {
 		setFocusable(true);
@@ -33,7 +34,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		Thread time = new Thread(timer);
 		time.start();
 
-		Mistakes Mistake = new Mistakes(3);
+		Mistake = new Mistakes(3);
 		Mistake.setBounds(550, 160, 200, 100);
 		add(Mistake);
 
@@ -47,12 +48,12 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		hint.setBounds(550, 380, 200, 100);
 		hint.addActionListener(this);
 		
-		hint_label = new Hint_Label();
-		add(hint_label);
-		hint_label.setBounds(50, 500, 600, 150);
+		info = new Info();
+		add(info);
+		info.setBounds(50, 500, 600, 150);
 		
 		setLayout(null);
-		Block = new JLabel[NumberofBlocks * NumberofBlocks];
+		Block = new Sudoku_Block[NumberofBlocks * NumberofBlocks];
 	}
 
 	@Override
@@ -69,10 +70,10 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		else if (source == hint) {
 			 Naked_Single if_naked = NakedSingle();
 			 if (if_naked.getfound()) {
-				 hint_label.setText("I found naked single in row: " + if_naked.row + " and column: " + if_naked.column);
+				 info.setText("I found naked single in row: " + if_naked.row + " and column: " + if_naked.column);
 			 }
 			 else
-				 hint_label.setText("I didn't found any hint!");
+				 info.setText("I didn't found any hint!");
 		}
 	}
 	/*public

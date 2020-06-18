@@ -12,8 +12,6 @@ public class Candidates extends JButton {
 		super();
 		setText("Candidates off");
 		setFont(new Font("Arial", Font.BOLD, 25));
-		setHorizontalAlignment(JLabel.CENTER);
-		setVerticalAlignment(JLabel.CENTER);
 		setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.black));
 		setFocusPainted(false);
 	}

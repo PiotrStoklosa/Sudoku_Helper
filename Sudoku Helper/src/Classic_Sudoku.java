@@ -23,8 +23,8 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 				Block[i * NumberofBlocks + j].setOpaque(true);
 				Block[i * NumberofBlocks + j].setHorizontalAlignment(JLabel.CENTER);
 				Block[i * NumberofBlocks + j].setVerticalAlignment(JLabel.CENTER);
-				Block[i*NumberofBlocks + j].setBackground(new Color(204, 102, 0));
-				//Block[i * NumberofBlocks + j].setBackground(Color.white);
+				// Block[i*NumberofBlocks + j].setBackground(new Color(204, 102, 0));
+				Block[i * NumberofBlocks + j].setBackground(Color.white);
 				border_right = 3;
 				border_left = 3;
 				border_top = 3;
@@ -51,15 +51,15 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		Object source = e.getSource();
-		
-		for (int i=0; i< NumberofBlocks; i++)
-			for (int j=0; j< NumberofBlocks; j++) {
-				if (source == Block[i * NumberofBlocks + j] && Block[i * NumberofBlocks + j].enabled && Block[i * NumberofBlocks + j].counter)
-				{
+
+		for (int i = 0; i < NumberofBlocks; i++)
+			for (int j = 0; j < NumberofBlocks; j++) {
+				if (source == Block[i * NumberofBlocks + j] && Block[i * NumberofBlocks + j].enabled
+						&& Block[i * NumberofBlocks + j].counter) {
 					Block[i * NumberofBlocks + j].counter = !Block[i * NumberofBlocks + j].counter;
 					Block[i * NumberofBlocks + j].setBackground(new Color(0x83, 0xA3, 0x8C));
-    		
-					Number_Selector select = new Number_Selector(i, j, this, info, Mistake);
+
+					Number_Selector select = new Number_Selector(i, j, this);
 
 					select.setVisible(true);
 				}
@@ -69,26 +69,27 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	void actual(Sudoku_Block i) {
 		System.out.println("dsadsa");
 	}

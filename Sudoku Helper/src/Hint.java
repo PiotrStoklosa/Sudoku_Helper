@@ -10,6 +10,6 @@ public class Hint extends JButton {
 		setFont(new Font("Arial", Font.BOLD, 25));
 		setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.black));
 		setFocusPainted(false);
-		
+
 	}
 }

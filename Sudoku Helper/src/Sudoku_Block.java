@@ -7,9 +7,11 @@ public class Sudoku_Block extends JLabel {
 	public static boolean counter = true;
 	boolean All_Candidates[];
 	boolean Player_Candidates[];
+	boolean empty;
 
 	Sudoku_Block(int X, int Y, int NumberofBlocks) {
 		super();
+		empty = true;
 		All_Candidates = new boolean[NumberofBlocks];
 		Player_Candidates = new boolean[NumberofBlocks];
 		for (int i = 0; i < NumberofBlocks; i++) {
@@ -46,5 +48,8 @@ public class Sudoku_Block extends JLabel {
 		Candidates.append("</html>");
 		setText(Candidates.toString());
 
+	}
+	boolean getEmpty() {
+		return empty;
 	}
 }

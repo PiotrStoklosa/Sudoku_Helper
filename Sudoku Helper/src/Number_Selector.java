@@ -46,12 +46,12 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		Blunder blunder = new Blunder();
 
 		for (int i = x * 9; i < x * 9 + 9; i++) {
-			if (board.Block[i].getText() != "" && board.Block[i].getText().length() < 5
+			if (!board.Block[i].getEmpty()
 					&& Integer.parseInt(board.Block[i].getText()) == number)
 				return blunder.Made_Blunder(x, i % 9);
 		}
 		for (int i = y; i < 81; i += 9)
-			if (board.Block[i].getText() != "" && board.Block[i].getText().length() < 5
+			if (!board.Block[i].getEmpty()
 					&& Integer.parseInt(board.Block[i].getText()) == number)
 				return blunder.Made_Blunder(i / 9, y);
 
@@ -60,8 +60,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 		for (int j = 0; j < 3; j++)
 			for (int k = 0; k < 3; k++)
-				if (board.Block[(first_block_row + j) * 9 + first_block_column + k].getText() != ""
-						&& board.Block[(first_block_row + j) * 9 + first_block_column + k].getText().length() < 5
+				if (!board.Block[(first_block_row + j) * 9 + first_block_column + k].getEmpty()
 						&& Integer.parseInt(
 								board.Block[(first_block_row + j) * 9 + first_block_column + k].getText()) == number)
 					return blunder.Made_Blunder(first_block_row + j, first_block_column + k);
@@ -111,6 +110,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 						dispose();
 					} else {
 						Candidates_Update(i);
+						buttoninstance.empty=false;
 						board.info.setText("Info");
 						buttoninstance.setBackground(Color.white);
 						buttoninstance.setText(Integer.toString(i + 1));
@@ -153,6 +153,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 					dispose();
 				} else {
 					Candidates_Update(chr - 1);
+					buttoninstance.empty=false;
 					board.info.setText("Info");
 					buttoninstance.setBackground(Color.white);
 					buttoninstance.setText(Integer.toString(chr - 1 + 1));

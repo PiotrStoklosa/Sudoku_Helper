@@ -1,5 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
@@ -47,16 +48,19 @@ public class Main_menu extends JFrame implements ActionListener {
 			dispose();
 		
 		if (source == play) {
-			
-			Classic_Sudoku field = new Classic_Sudoku();
-			field.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			field.setVisible(true);
+			Menu_Difficulty_Level menu = new Menu_Difficulty_Level();
+			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			menu.setVisible(true);
 			dispose();
 			
 		}
 		
 		if (source == create) {
-
+			
+			Classic_Sudoku board = new Classic_Sudoku();
+			board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			board.setVisible(true);
+			
 		}
 		
 	}

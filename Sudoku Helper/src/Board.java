@@ -2,7 +2,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
+
 
 public abstract class Board extends JFrame implements ActionListener, Methods {
 
@@ -262,6 +264,31 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 
 		return counter;
 	}
+	
+	public void next(String method, String place, int row, int column, int digit) {
+
+		int block_index = row * NumberofBlocks + column;
+
+		if (method.equals("Hidden single"))
+			info.setText("<html>Hidden single in " + place + "</html>");
+
+		else if (method.equals("Naked single"))
+			info.setText("<html>Naked single in row " + row + " column " + column + "</html>");
+
+		Block[block_index].setText(Integer.toString(digit));
+		Block[block_index].setBackground(Color.green);
+
+		Candidates_Update(digit - 1, row, column);
+
+		Block[block_index].enabled = !Block[block_index].enabled;
+		Block[block_index].empty = false;
+		Block[block_index].setFont(new Font("Arial", Font.BOLD, 30));
+
+		if (++counter == NumberofBlocks * NumberofBlocks)
+			win();
+
+	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -350,29 +377,5 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				} while (!finished && info.getText() != "I didn't find any hint!");
 			}
 		}
-	}
-
-	public void next(String method, String place, int row, int column, int digit) {
-
-		int block_index = row * NumberofBlocks + column;
-
-		if (method.equals("Hidden single"))
-			info.setText("<html>Hidden single in " + place + "</html>");
-
-		else if (method.equals("Naked single"))
-			info.setText("<html>Naked single in row " + row + " column " + column + "</html>");
-
-		Block[block_index].setText(Integer.toString(digit));
-		Block[block_index].setBackground(Color.green);
-
-		Candidates_Update(digit - 1, row, column);
-
-		Block[block_index].enabled = !Block[block_index].enabled;
-		Block[block_index].empty = false;
-		Block[block_index].setFont(new Font("Arial", Font.BOLD, 30));
-
-		if (++counter == NumberofBlocks * NumberofBlocks)
-			win();
-
 	}
 }

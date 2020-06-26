@@ -5,6 +5,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
 public class Solve extends JButton{
+
+	private static final long serialVersionUID = -700269828484033561L;
+
 	Solve(){
 		super();
 		setText("Solve");

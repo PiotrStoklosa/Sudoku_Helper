@@ -6,12 +6,14 @@ import javax.swing.JLabel;
 
 public class Timer extends JLabel implements Runnable {
 
+	private static final long serialVersionUID = -505480415486575848L;
+	
 	int minutes = 0;
 	int seconds = 0;
-
+	boolean state = true;
 	@Override
 	public void run() {
-		while (true) {
+		while (state) {
 			try {
 				setText("Time " + minutes + " : " + seconds);
 				if (seconds < 10 && minutes < 10)
@@ -36,5 +38,8 @@ public class Timer extends JLabel implements Runnable {
 			}
 
 		}
+	}
+	public void off() {
+		state = false;
 	}
 }

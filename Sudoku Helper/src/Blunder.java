@@ -1,7 +1,8 @@
 
 public class Blunder {
+	
 	boolean correctness;
-	int x, y;
+	private int x, y;
 
 	Blunder() {
 		correctness = true;

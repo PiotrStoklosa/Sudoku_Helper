@@ -5,6 +5,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
 public class Show_next extends JButton{
+
+	private static final long serialVersionUID = -741496727331836702L;
+
 	Show_next(){
 		super();
 		setText("Show next");

@@ -2,33 +2,47 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 public abstract class Board extends JFrame implements ActionListener, Methods {
+
+	private static final long serialVersionUID = 2589826376003918979L;
+
 	int NumberofBlocks;
-	Sudoku_Block[] Block;
+	int block_width, block_height;
 	int border_right, border_left, border_top, border_bottom;
+	int counter;
+	boolean finished;
+
+	Sudoku_Block[] Block;
+
 	Candidates Candidate;
 	Hint hint;
 	Info info;
-	Mistakes Mistake;
+	Mistakes mistakes;
 	Show_next show_next;
 	Solve solve;
-	Board(int NumberofBlocks) {
+	Timer timer;
+
+	Board(int NumberofBlocks, int block_width, int block_height) {
+
+		setLayout(null);
 		setFocusable(true);
+		finished = false;
+
+		Block = new Sudoku_Block[NumberofBlocks * NumberofBlocks];
+		this.NumberofBlocks = NumberofBlocks;
+		this.block_width = block_width;
+		this.block_height = block_height;
+
 		MenuBar Bar = new MenuBar();
 		setJMenuBar(Bar);
 		setSize(800, 800);
 		setResizable(false);
 		setLocation(500, 100);
 		setTitle("Sudoku");
-		this.NumberofBlocks = NumberofBlocks;
 
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.setOpaque(true);
 		timer.setBounds(550, 50, 200, 100);
 
@@ -36,9 +50,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		Thread time = new Thread(timer);
 		time.start();
 
-		Mistake = new Mistakes(3);
-		Mistake.setBounds(550, 160, 200, 100);
-		add(Mistake);
+		mistakes = new Mistakes(3);
+		mistakes.setBounds(550, 160, 200, 100);
+		add(mistakes);
 
 		Candidate = new Candidates();
 		Candidate.setBounds(550, 270, 200, 100);
@@ -53,212 +67,84 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		info = new Info();
 		add(info);
 		info.setBounds(30, 510, 500, 150);
-		
+
 		show_next = new Show_next();
 		add(show_next);
 		show_next.setBounds(550, 490, 200, 100);
 		show_next.addActionListener(this);
-		
+
 		solve = new Solve();
 		add(solve);
 		solve.setBounds(550, 600, 200, 100);
 		solve.addActionListener(this);
 
-		setLayout(null);
-		Block = new Sudoku_Block[NumberofBlocks * NumberofBlocks];
+	}
+
+	public void Candidates_Update(int number, int x, int y) {
+
+		for (int i = x * NumberofBlocks; i < x * NumberofBlocks + NumberofBlocks; i++)
+			Block[i].All_Candidates[number] = false;
+
+		for (int i = y; i < NumberofBlocks * NumberofBlocks; i += NumberofBlocks)
+			Block[i].All_Candidates[number] = false;
+
+		int first_block_row = x - x % block_width;
+		int first_block_column = y - y % block_height;
+
+		for (int j = 0; j < block_height; j++)
+			for (int k = 0; k < block_width; k++)
+				Block[(first_block_row + j) * NumberofBlocks + first_block_column + k].All_Candidates[number] = false;
+
+	}
+
+	public void win() {
+		info.setText("<html>Congratulation! You solved this sudoku! <br/>" + timer.getText() + "</html>");
+		finished = true;
+		timer.off();
 	}
 	
-	public void Candidates_Update(int number, int x, int y) {
-		for (int i = x * 9; i < x * 9 + 9; i++)
-			Block[i].All_Candidates[number] = false;
-
-		for (int i = y; i < 81; i += 9)
-			Block[i].All_Candidates[number] = false;
-
-		int first_block_row = x - x % 3;
-		int first_block_column = y - y % 3;
-
-		for (int j = 0; j < 3; j++)
-			for (int k = 0; k < 3; k++)
-				Block[(first_block_row + j) * 9 + first_block_column + k].All_Candidates[number] = false;
+	public void lose() {
+		info.setText("You've reahced limit of mistakes!");
+		finished = true;
+		timer.off();
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if (source == Candidate) {
-			if (Candidate.on_off) {
-				Candidate.setText("Candidates off");
-			} else {
-				Candidate.setText("Candidates on");
-			}
-
-			Candidate.on_off = !Candidate.on_off;
-		} else if (source == hint) {
-
-			Hidden_Single if_hidden = HiddenSingle();
-
-			if (if_hidden.getfound()) {
-				info.setText("<html>Hidden single: Exist one field in " + if_hidden.info_place_Hidden_Single()
-						+ "where number " + if_hidden.digit + " can be written!</html>");
-			} else {
-				
-				Naked_Single if_naked = NakedSingle();
-				
-				if (if_naked.getfound()) {
-					info.setText("<html>Naked single: Exist one field in row " + if_naked.row
-							+ " where there allow you to write only one number!" + "</html>");
-				} else
-					info.setText("I didn't find any hint!");
-			}
-		}
-		else if (source == show_next) {
-			
-			Hidden_Single if_hidden = HiddenSingle();
-			if (if_hidden.getfound()) {
-				info.setText("<html>Hidden single in " + if_hidden.info_place_Hidden_Single() + "</html>");
-				Block[if_hidden.row * NumberofBlocks + if_hidden.column].setText(Integer.toString(if_hidden.digit));
-				Block[if_hidden.row * NumberofBlocks + if_hidden.column].setBackground(Color.green);
-				Candidates_Update(if_hidden.digit-1, if_hidden.row, if_hidden.column);
-				Block[if_hidden.row * NumberofBlocks + if_hidden.column].enabled = !Block[if_hidden.row * NumberofBlocks + if_hidden.column].enabled;
-				Block[if_hidden.row * NumberofBlocks + if_hidden.column].empty=false;
-				Block[if_hidden.row * NumberofBlocks + if_hidden.column].setFont(new Font("Arial", Font.BOLD, 30));
-				
-			}
-			else {
-				Naked_Single if_naked = NakedSingle();
-				if (if_naked.getfound()) {
-				info.setText("<html>Naked single in row " + if_naked.row + " column " + if_naked.column + "</html>");
-				Block[if_naked.row * NumberofBlocks + if_naked.column].setText(Integer.toString(if_naked.digit));
-				Block[if_naked.row * NumberofBlocks + if_naked.column].setBackground(Color.green);
-				Candidates_Update(if_naked.digit-1, if_naked.row, if_naked.column);
-				Block[if_naked.row * NumberofBlocks + if_naked.column].enabled = !Block[if_naked.row * NumberofBlocks + if_naked.column].enabled;
-				Block[if_naked.row * NumberofBlocks + if_naked.column].empty=false;
-				Block[if_naked.row * NumberofBlocks + if_naked.column].setFont(new Font("Arial", Font.BOLD, 30));
-				} else
-					info.setText("I didn't find any hint!");
-			}
-		}
-		else if (source == solve) {
-			
-			do {
-				Hidden_Single if_hidden = HiddenSingle();
-				if (if_hidden.getfound()) {
-					info.setText("<html>Hidden single in " + if_hidden.info_place_Hidden_Single() + "</html>");
-					Block[if_hidden.row * NumberofBlocks + if_hidden.column].setText(Integer.toString(if_hidden.digit));
-					Block[if_hidden.row * NumberofBlocks + if_hidden.column].setBackground(Color.green);
-					Candidates_Update(if_hidden.digit-1, if_hidden.row, if_hidden.column);
-					Block[if_hidden.row * NumberofBlocks + if_hidden.column].enabled = !Block[if_hidden.row * NumberofBlocks + if_hidden.column].enabled;
-					Block[if_hidden.row * NumberofBlocks + if_hidden.column].empty=false;
-					Block[if_hidden.row * NumberofBlocks + if_hidden.column].setFont(new Font("Arial", Font.BOLD, 30));
-					
-				}
-				else {
-					Naked_Single if_naked = NakedSingle();
-					if (if_naked.getfound()) {
-					info.setText("<html>Naked single in row " + if_naked.row + " column " + if_naked.column + "</html>");
-					Block[if_naked.row * NumberofBlocks + if_naked.column].setText(Integer.toString(if_naked.digit));
-					Block[if_naked.row * NumberofBlocks + if_naked.column].setBackground(Color.green);
-					Candidates_Update(if_naked.digit-1, if_naked.row, if_naked.column);
-					Block[if_naked.row * NumberofBlocks + if_naked.column].enabled = !Block[if_naked.row * NumberofBlocks + if_naked.column].enabled;
-					Block[if_naked.row * NumberofBlocks + if_naked.column].empty=false;
-					Block[if_naked.row * NumberofBlocks + if_naked.column].setFont(new Font("Arial", Font.BOLD, 30));
-					} else
-						info.setText("I didn't find any hint!");
-				}
-			} while (!info.getText().equals("I didn't find any hint!"));
-		}
-	}
-
-	int Count_Possible_Digits(int field) {
-		int counter = 0;
-		for (int i = 0; i < NumberofBlocks; i++) {
-			if (Block[field].All_Candidates[i])
-				counter++;
-		}
-		return counter;
-	}
-
-	public Naked_Single NakedSingle() {
-		int counter;
-		Naked_Single single = new Naked_Single();
-		for (int i = 0; i < NumberofBlocks; i++) {
-			for (int j = 0; j < NumberofBlocks; j++) {
-				counter = Count_Possible_Digits(i * 9 + j);
-				if (counter == 1 && Block[i * 9 + j].getEmpty()) {
-					for (int k=0; k<9; k++) {
-						if (Block[i * 9 + j].All_Candidates[k]) 
-							single.setNaked_Single(i, j, k);
-					}
-					
-					return single;
-				}
-
-			}
-		}
-		return single;
-	}
-
-	public Hidden_Single HiddenSingle(String place, int index, int number, int block) {
-		Hidden_Single single = new Hidden_Single();
-
-		if (place.equals("row")) {
-			for (int i = index * 9; i < index * 9 + 9; i++) {
-				if (Block[i].getEmpty() && Block[i].All_Candidates[number] == true) {
-					single.setHidden_Single("row", index, i % 9, number);
-					return single;
-				}
-			}
-
-		} else if (place.equals("column")) {
-			for (int i = index; i < NumberofBlocks * NumberofBlocks; i += NumberofBlocks) {
-				if (Block[i].getEmpty() && Block[i].All_Candidates[number] == true) {
-					single.setHidden_Single("column", i / 9, index, number);
-					return single;
-				}
-			}
-		} else {
-			int first_block_row = block - block%3;
-			int first_block_column = (block % 3) * 3;
-			for (int i = 0; i < 3; i++) { // row in block
-				for (int j = 0; j < 3; j++) { // column in block
-					if (Block[(first_block_row + i) * 9 + first_block_column + j].getEmpty() && Block[(first_block_row + i) * 9 + first_block_column + j].All_Candidates[number] == true) {
-						single.setHidden_Single("block", first_block_row + i, first_block_column + j, number);
-						return single;
-					}
-						
-				}
-			}
-		}
-		return single;
-	}
+	// Method Hidden_Single (one function for finding, one for returning)
 
 	public Hidden_Single HiddenSingle() {
-		
-		for (int i = 0; i < 3; i++) { // block row
-			for (int j = 0; j < 3; j++) { // block column
-				for (int k = 0; k < 9; k++) { // number
+
+		for (int i = 0; i < NumberofBlocks / block_height; i++) { // block row
+			for (int j = 0; j < NumberofBlocks / block_width; j++) { // block column
+				for (int k = 0; k < NumberofBlocks; k++) { // number
+
 					int counter = 0;
-					for (int l = 0; l < 3; l++) { // row in block
-						for (int m = 0; m < 3; m++) { // column in block
-							if (Block[i*27 + j*3 + l*9 + m].getEmpty() && Block[i*27 + j*3 + l*9 + m].All_Candidates[k])
+
+					for (int l = 0; l < block_height; l++) { // row in block
+						for (int m = 0; m < block_width; m++) { // column in block
+
+							if (Block[i * NumberofBlocks * block_height + j * block_width + l * NumberofBlocks + m]
+									.getEmpty()
+									&& Block[i * NumberofBlocks * block_height + j * block_width + l * NumberofBlocks
+											+ m].All_Candidates[k])
 								counter++;
 						}
 					}
 					if (counter == 1) {
-						return HiddenSingle("block", 0, k, i*3 + j);
+						return HiddenSingle("block", 0, k, i * 3 + j);
 					}
-							
-						
+
 				}
 			}
 		}
-		
+
 		for (int i = 0; i < NumberofBlocks; i++) {
 			for (int j = 0; j < NumberofBlocks; j++) {
+
 				int counter = 0;
+
 				for (int k = 0; k < NumberofBlocks; k++) {
-					if (Block[i * 9 + k].getEmpty() && Block[i * 9 + k].All_Candidates[j])
+
+					if (Block[i * NumberofBlocks + k].getEmpty() && Block[i * NumberofBlocks + k].All_Candidates[j])
 						counter++;
 				}
 
@@ -267,11 +153,15 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 
 			}
 		}
+
 		for (int i = 0; i < NumberofBlocks; i++) {
 			for (int j = 0; j < NumberofBlocks; j++) {
+
 				int counter = 0;
+
 				for (int k = 0; k < NumberofBlocks; k++) {
-					if (Block[i + k * 9].getEmpty() && Block[i + k * 9].All_Candidates[j])
+
+					if (Block[i + k * NumberofBlocks].getEmpty() && Block[i + k * NumberofBlocks].All_Candidates[j])
 						counter++;
 				}
 
@@ -281,7 +171,208 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 			}
 		}
 
-
 		return new Hidden_Single();
+	}
+
+	public Hidden_Single HiddenSingle(String place, int index, int number, int block) {
+
+		Hidden_Single single = new Hidden_Single();
+
+		if (place.equals("row")) {
+
+			for (int i = index * NumberofBlocks; i < index * NumberofBlocks + NumberofBlocks; i++) {
+
+				if (Block[i].getEmpty() && Block[i].All_Candidates[number] == true) {
+
+					single.setHidden_Single("row", index, i % NumberofBlocks, number);
+					return single;
+				}
+			}
+
+		} else if (place.equals("column")) {
+
+			for (int i = index; i < NumberofBlocks * NumberofBlocks; i += NumberofBlocks) {
+
+				if (Block[i].getEmpty() && Block[i].All_Candidates[number] == true) {
+
+					single.setHidden_Single("column", i / NumberofBlocks, index, number);
+					return single;
+				}
+			}
+		} else {
+
+			int first_block_row = block - block % block_width;
+			int first_block_column = (block % block_height) * block_height;
+
+			for (int i = 0; i < block_height; i++) { // row in block
+				for (int j = 0; j < block_width; j++) { // column in block
+
+					if (Block[(first_block_row + i) * NumberofBlocks + first_block_column + j].getEmpty()
+							&& Block[(first_block_row + i) * NumberofBlocks + first_block_column
+									+ j].All_Candidates[number] == true) {
+
+						single.setHidden_Single("block", first_block_row + i, first_block_column + j, number);
+						return single;
+					}
+
+				}
+			}
+		}
+		return single;
+	}
+
+	// Method Naked_Single (one function for finding, one for counting possible
+	// digits)
+
+	public Naked_Single NakedSingle() {
+
+		int counter;
+		Naked_Single single = new Naked_Single();
+
+		for (int i = 0; i < NumberofBlocks; i++) {
+			for (int j = 0; j < NumberofBlocks; j++) {
+
+				counter = Count_Possible_Digits(i * NumberofBlocks + j);
+
+				if (counter == 1 && Block[i * NumberofBlocks + j].getEmpty()) {
+
+					for (int k = 0; k < NumberofBlocks; k++) {
+						if (Block[i * NumberofBlocks + j].All_Candidates[k])
+							single.setNaked_Single(i, j, k);
+					}
+
+					return single;
+				}
+
+			}
+		}
+
+		return single;
+	}
+
+	public int Count_Possible_Digits(int field) {
+
+		int counter = 0;
+
+		for (int i = 0; i < NumberofBlocks; i++) {
+
+			if (Block[field].All_Candidates[i])
+				counter++;
+		}
+
+		return counter;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+		Object source = e.getSource();
+
+		if (source == Candidate) {
+
+			if (Candidate.on_off)
+				Candidate.setText("Candidates off");
+
+			else
+				Candidate.setText("Candidates on");
+
+			Candidate.on_off = !Candidate.on_off;
+
+		} else if (source == hint) {
+
+			if (!finished) {
+
+				Hidden_Single if_hidden = HiddenSingle();
+
+				if (if_hidden.getfound())
+					info.setText("<html>Hidden single: Exist one field in " + if_hidden.info_place_Hidden_Single()
+							+ "where number " + if_hidden.digit + " can be written!</html>");
+
+				else {
+
+					Naked_Single if_naked = NakedSingle();
+
+					if (if_naked.getfound())
+						info.setText("<html>Naked single: Exist one field in row " + (if_naked.row + 1)
+								+ " where there allow you to write only one number!" + "</html>");
+
+					else
+						info.setText("I didn't find any hint!");
+				}
+			}
+
+		} else if (source == show_next) {
+
+			if (!finished) {
+
+				Hidden_Single if_hidden = HiddenSingle();
+
+				if (if_hidden.getfound())
+					next("Hidden single", if_hidden.info_place_Hidden_Single(), if_hidden.row, if_hidden.column,
+							if_hidden.digit);
+
+				else {
+
+					Naked_Single if_naked = NakedSingle();
+
+					if (if_naked.getfound())
+						next("Naked single", "", if_naked.row, if_naked.column, if_naked.digit);
+
+					else
+						info.setText("I didn't find any hint!");
+
+				}
+			}
+
+		} else if (source == solve) {
+
+			if (!finished) {
+
+				do {
+					Hidden_Single if_hidden = HiddenSingle();
+
+					if (if_hidden.getfound())
+						next("Hidden single", if_hidden.info_place_Hidden_Single(), if_hidden.row, if_hidden.column,
+								if_hidden.digit);
+
+					else {
+
+						Naked_Single if_naked = NakedSingle();
+
+						if (if_naked.getfound())
+							next("Naked single", "", if_naked.row, if_naked.column, if_naked.digit);
+
+						else
+							info.setText("I didn't find any hint!");
+
+					}
+
+				} while (!finished && info.getText() != "I didn't find any hint!");
+			}
+		}
+	}
+
+	public void next(String method, String place, int row, int column, int digit) {
+
+		int block_index = row * NumberofBlocks + column;
+
+		if (method.equals("Hidden single"))
+			info.setText("<html>Hidden single in " + place + "</html>");
+
+		else if (method.equals("Naked single"))
+			info.setText("<html>Naked single in row " + row + " column " + column + "</html>");
+
+		Block[block_index].setText(Integer.toString(digit));
+		Block[block_index].setBackground(Color.green);
+
+		Candidates_Update(digit - 1, row, column);
+
+		Block[block_index].enabled = !Block[block_index].enabled;
+		Block[block_index].empty = false;
+		Block[block_index].setFont(new Font("Arial", Font.BOLD, 30));
+
+		if (++counter == NumberofBlocks * NumberofBlocks)
+			win();
+
 	}
 }

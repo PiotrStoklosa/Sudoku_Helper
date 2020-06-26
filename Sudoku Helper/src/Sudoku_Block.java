@@ -1,8 +1,10 @@
 import java.awt.Font;
-
 import javax.swing.JLabel;
 
 public class Sudoku_Block extends JLabel {
+
+	private static final long serialVersionUID = -2042175369665055478L;
+	
 	public boolean enabled = true;
 	public static boolean counter = true;
 	boolean All_Candidates[];

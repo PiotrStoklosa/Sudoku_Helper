@@ -4,6 +4,8 @@ import javax.swing.JMenuItem;
 
 public class MenuBar extends JMenuBar {
 
+	private static final long serialVersionUID = -6682723460371369300L;
+
 	JMenu Options, Help, Info;
 
 	JMenuItem Save, Load, Restart, Main_Menu;

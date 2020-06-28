@@ -14,9 +14,9 @@ public class Sudoku_Block extends JLabel {
 	Sudoku_Block(int X, int Y, int NumberofBlocks) {
 		super();
 		empty = true;
-		All_Candidates = new boolean[NumberofBlocks];
-		Player_Candidates = new boolean[NumberofBlocks];
-		for (int i = 0; i < NumberofBlocks; i++) {
+		All_Candidates = new boolean[9];
+		Player_Candidates = new boolean[9];
+		for (int i = 0; i < 9; i++) {
 			All_Candidates[i] = true;
 			Player_Candidates[i] = false;
 		}

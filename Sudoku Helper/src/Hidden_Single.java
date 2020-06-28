@@ -30,13 +30,13 @@ public class Hidden_Single {
 		this.column = column;
 		found = true;
 	}
-	String info_place_Hidden_Single() {
+	String info_place_Hidden_Single(int block_width, int block_height) {
 		if (in_row)
 			return "row " + (row+1) + " ";
 		if (in_column)
 			return "column " + (column+1) + " ";
-		int x_block = row - row%3;
-		int y_block = (column - column%3)/3;
+		int x_block = row - row % block_height;
+		int y_block = (column - column%block_width)/block_width;
 		if (in_block)
 			return "block " + (x_block + y_block + 1) + " ";
 		return "Blank single!";

@@ -90,8 +90,8 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		for (int i = y; i < NumberofBlocks * NumberofBlocks; i += NumberofBlocks)
 			Block[i].All_Candidates[number] = false;
 
-		int first_block_row = x - x % block_width;
-		int first_block_column = y - y % block_height;
+		int first_block_row = x - x % block_height;
+		int first_block_column = y - y % block_width;
 
 		for (int j = 0; j < block_height; j++)
 			for (int k = 0; k < block_width; k++)
@@ -132,7 +132,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 						}
 					}
 					if (counter == 1) {
-						return HiddenSingle("block", 0, k, i * 3 + j);
+						return HiddenSingle("block", 0, k, i * NumberofBlocks / block_width + j);
 					}
 
 				}
@@ -203,9 +203,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 			}
 		} else {
 
-			int first_block_row = block - block % block_width;
-			int first_block_column = (block % block_height) * block_height;
-
+			int first_block_row = block - block % block_height;
+			int first_block_column = (block % block_height) * block_width;
+				
 			for (int i = 0; i < block_height; i++) { // row in block
 				for (int j = 0; j < block_width; j++) { // column in block
 
@@ -312,7 +312,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				Hidden_Single if_hidden = HiddenSingle();
 
 				if (if_hidden.getfound())
-					info.setText("<html>Hidden single: Exist one field in " + if_hidden.info_place_Hidden_Single()
+					info.setText("<html>Hidden single: Exist one field in " + if_hidden.info_place_Hidden_Single(block_width, block_height)
 							+ "where number " + if_hidden.digit + " can be written!</html>");
 
 				else {
@@ -335,7 +335,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				Hidden_Single if_hidden = HiddenSingle();
 
 				if (if_hidden.getfound())
-					next("Hidden single", if_hidden.info_place_Hidden_Single(), if_hidden.row, if_hidden.column,
+					next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height), if_hidden.row, if_hidden.column,
 							if_hidden.digit);
 
 				else {
@@ -359,7 +359,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 					Hidden_Single if_hidden = HiddenSingle();
 
 					if (if_hidden.getfound())
-						next("Hidden single", if_hidden.info_place_Hidden_Single(), if_hidden.row, if_hidden.column,
+						next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height), if_hidden.row, if_hidden.column,
 								if_hidden.digit);
 
 					else {

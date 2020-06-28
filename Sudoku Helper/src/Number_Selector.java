@@ -37,16 +37,16 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		setLayout(null);
 		setTitle("Select number");
 		
-		Numbers = new JButton[9];
+		Numbers = new JButton[board.NumberofBlocks];
 		
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 3; j++) {
+		for (int i = 0; i < Math.floor(Math.sqrt(board.NumberofBlocks)); i++)
+			for (int j = 0; j < board.NumberofBlocks/Math.floor(Math.sqrt(board.NumberofBlocks)); j++) {
 				
-				Numbers[j * 3 + i] = new JButton(Integer.toString(j * 3 + i + 1));
-				Numbers[j * 3 + i].setBounds(20 + 50 * i, 20 + 50 * j, 41, 41);
+				Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)] = new JButton(Integer.toString((int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i) + 1));
+				Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)].setBounds(20 + 50 * i, 20 + 50 * j, 41, 41);
 				
-				add(Numbers[j * 3 + i]);
-				Numbers[j * 3 + i].addActionListener(this);
+				add(Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)]);
+				Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)].addActionListener(this);
 			}
 	}
 

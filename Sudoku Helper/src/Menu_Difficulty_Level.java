@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
 public class Menu_Difficulty_Level extends JFrame implements ActionListener {
@@ -20,6 +21,7 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 	Board board;
 	JButton easy, normal, hard;
 	int amount = 2;
+	JComboBox<String> Type_of_Sudoku;
 
 	Menu_Difficulty_Level() {
 
@@ -33,9 +35,9 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 		normal = new JButton("normal");
 		hard = new JButton("hard");
 
-		easy.setBounds(100, 50, 80, 40);
-		normal.setBounds(100, 100, 80, 40);
-		hard.setBounds(100, 150, 80, 40);
+		easy.setBounds(100, 100, 80, 40);
+		normal.setBounds(100, 150, 80, 40);
+		hard.setBounds(100, 200, 80, 40);
 
 		setLocation(850, 400);
 		setLayout(null);
@@ -47,16 +49,23 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 		easy.addActionListener(this);
 		normal.addActionListener(this);
 		hard.addActionListener(this);
-
+		
+		Type_of_Sudoku = new JComboBox <String>();
+		Type_of_Sudoku.setBounds(70, 50, 140, 40);
+		Type_of_Sudoku.addItem("Classic Sudoku");
+		Type_of_Sudoku.addItem("Sudoku 6x6");
+		add(Type_of_Sudoku);
 	}
 
-	public void Loaded_Board(List<String> pages, String level) {
-		
+	public void Loaded_Board(List<String> pages, String level, String type) {
+			
 		Random random = new Random();
 		int offset = random.nextInt(amount);
 
 		offset++;
 		int index = 0;
+		while (!pages.get(index).equals(type))
+			index++;
 		
 		while (!pages.get(index).equals(level))
 			index++;
@@ -82,7 +91,6 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 				
 			}
 		}
-
 		dispose();
 	}
 
@@ -90,10 +98,17 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		Object source = e.getSource();
-
-		board = new Classic_Sudoku();
-		board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		board.setVisible(true);
+		
+		String choice = Type_of_Sudoku.getSelectedItem().toString();
+		
+		if (choice == "Classic Sudoku") {
+			board = new Classic_Sudoku();
+		}
+		else if (choice == "Sudoku 6x6") {
+			board = new Sudoku_6x6();
+		}
+			board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			board.setVisible(true);
 
 		Path input = Paths.get("./Boards.txt");
 		List<String> pages = null;
@@ -108,17 +123,17 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 		}
 
 		if (source == easy) {
-			Loaded_Board(pages, "easy");
+			Loaded_Board(pages, "easy", choice);
 		}
 
 		if (source == normal) {
 
-			Loaded_Board(pages, "normal");
+			Loaded_Board(pages, "normal", choice);
 
 		}
 
 		if (source == hard) {
-			Loaded_Board(pages, "hard");
+			Loaded_Board(pages, "hard", choice);
 		}
 
 	}

@@ -10,7 +10,7 @@ public class Info extends JLabel {
 		
 		super();
 		setFont(new Font("Arial", Font.BOLD, 25));
-		setText("Hint");
+		setText("Info");
 		
 	}
 }

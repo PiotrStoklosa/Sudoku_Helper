@@ -9,9 +9,9 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 
 	private static final long serialVersionUID = -5923595070988804248L;
 
-	Classic_Sudoku() {
+	Classic_Sudoku(String role) {
 
-		super(9, 3, 3);
+		super(9, 3, 3, role);
 
 		counter = 0;
 
@@ -68,7 +68,7 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 
 						Block[i * NumberofBlocks + j].setBackground(new Color(0x83, 0xA3, 0x8C));
 
-						Number_Selector select = new Number_Selector(i, j, this);
+						Number_Selector select = new Number_Selector(i, j, this, "play");
 
 						select.setVisible(true);
 					}
@@ -77,19 +77,12 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
-	}
-
+	public void mousePressed(MouseEvent e) {}
 	@Override
-	public void mouseReleased(MouseEvent e) {
-	}
-
+	public void mouseReleased(MouseEvent e) {}
 	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
+	public void mouseEntered(MouseEvent e) {}
 	@Override
-	public void mouseExited(MouseEvent e) {
-	}
+	public void mouseExited(MouseEvent e) {}
 
 }

@@ -9,9 +9,9 @@ public class Sudoku_6x6 extends Board implements ActionListener, MouseListener{
 	
 	private static final long serialVersionUID = -5612397801562800499L;
 
-	Sudoku_6x6() {
+	Sudoku_6x6(String role) {
 
-		super(6, 3, 2);
+		super(6, 3, 2, role);
 
 		counter = 0;
 
@@ -68,7 +68,7 @@ public class Sudoku_6x6 extends Board implements ActionListener, MouseListener{
 
 						Block[i * NumberofBlocks + j].setBackground(new Color(0x83, 0xA3, 0x8C));
 
-						Number_Selector select = new Number_Selector(i, j, this);
+						Number_Selector select = new Number_Selector(i, j, this, "play");
 
 						select.setVisible(true);
 					}

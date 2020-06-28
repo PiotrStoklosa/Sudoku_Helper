@@ -21,10 +21,12 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 	Board board;
 	JButton easy, normal, hard;
 	int amount = 2;
+	String role;
 	JComboBox<String> Type_of_Sudoku;
 
-	Menu_Difficulty_Level() {
+	Menu_Difficulty_Level(String role) {
 
+		this.role = role;
 		setFocusable(true);
 		setSize(300, 300);
 		setResizable(false);
@@ -49,8 +51,8 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 		easy.addActionListener(this);
 		normal.addActionListener(this);
 		hard.addActionListener(this);
-		
-		Type_of_Sudoku = new JComboBox <String>();
+
+		Type_of_Sudoku = new JComboBox<String>();
 		Type_of_Sudoku.setBounds(70, 50, 140, 40);
 		Type_of_Sudoku.addItem("Classic Sudoku");
 		Type_of_Sudoku.addItem("Sudoku 6x6");
@@ -58,28 +60,30 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 	}
 
 	public void Loaded_Board(List<String> pages, String level, String type) {
-			
+
 		Random random = new Random();
 		int offset = random.nextInt(amount);
-
-		offset++;
+		
+		offset = 2 * offset + 1;
 		int index = 0;
 		while (!pages.get(index).equals(type))
 			index++;
-		
+
 		while (!pages.get(index).equals(level))
 			index++;
 
 		index += offset;
+
+		board.index_in_file = index;
 		
 		String[] load = pages.get(index).split(" ");
-		
+
 		for (int i = 0; i < load.length; i++) {
-			
+
 			int digit = Integer.parseInt(load[i]);
-			
+
 			if (digit > 0) {
-				
+
 				board.Candidates_Update(digit - 1, i / board.NumberofBlocks, i % board.NumberofBlocks);
 				board.counter++;
 				board.Block[i].empty = false;
@@ -88,7 +92,7 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 				board.Block[i].setText(Integer.toString(digit));
 				board.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
 				board.Block[i].setForeground(Color.black);
-				
+
 			}
 		}
 		dispose();
@@ -98,44 +102,47 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		Object source = e.getSource();
-		
+
 		String choice = Type_of_Sudoku.getSelectedItem().toString();
 		
-		if (choice == "Classic Sudoku") {
-			board = new Classic_Sudoku();
+			if (choice == "Classic Sudoku") {
+				board = new Classic_Sudoku("play");
+				
+			} else if (choice == "Sudoku 6x6") {
+				board = new Sudoku_6x6("play");
+			}
+
+		board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		board.setVisible(true);
+
+		if (role.contentEquals("play")) {
+
+			Path input = Paths.get("./Boards.txt");
+			List<String> pages = null;
+
+			try {
+
+				pages = Files.readAllLines(input, Charset.forName("UTF-8"));
+
+			} catch (IOException e1) {
+
+				e1.printStackTrace();
+			}
+
+			if (source == easy) {
+				Loaded_Board(pages, "easy", choice);
+			}
+
+			if (source == normal) {
+
+				Loaded_Board(pages, "normal", choice);
+
+			}
+
+			if (source == hard) {
+				Loaded_Board(pages, "hard", choice);
+			}
 		}
-		else if (choice == "Sudoku 6x6") {
-			board = new Sudoku_6x6();
-		}
-			board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			board.setVisible(true);
-
-		Path input = Paths.get("./Boards.txt");
-		List<String> pages = null;
-
-		try {
-
-			pages = Files.readAllLines(input, Charset.forName("UTF-8"));
-
-		} catch (IOException e1) {
-
-			e1.printStackTrace();
-		}
-
-		if (source == easy) {
-			Loaded_Board(pages, "easy", choice);
-		}
-
-		if (source == normal) {
-
-			Loaded_Board(pages, "normal", choice);
-
-		}
-
-		if (source == hard) {
-			Loaded_Board(pages, "hard", choice);
-		}
-
 	}
 
 }

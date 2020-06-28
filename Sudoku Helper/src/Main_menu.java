@@ -42,25 +42,25 @@ public class Main_menu extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		
 		Object source = e.getSource();
-
-		if (source == exit)
-			dispose();
+	
+		
 		
 		if (source == play) {
-			Menu_Difficulty_Level menu = new Menu_Difficulty_Level();
+			Menu_Difficulty_Level menu = new Menu_Difficulty_Level("play");
 			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			menu.setVisible(true);
-			dispose();
-			
 		}
 		
 		if (source == create) {
 			
-			Classic_Sudoku board = new Classic_Sudoku();
-			board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			board.setVisible(true);
+			Create_Menu menu = new Create_Menu();
+			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			menu.setVisible(true);
 			
 		}
+		
+
+		dispose();
 		
 	}
 

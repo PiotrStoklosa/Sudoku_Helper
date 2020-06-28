@@ -2,19 +2,26 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 import javax.swing.JFrame;
-
 
 public abstract class Board extends JFrame implements ActionListener, Methods {
 
 	private static final long serialVersionUID = 2589826376003918979L;
 
 	int NumberofBlocks;
+	int index_in_file;
 	int block_width, block_height;
 	int border_right, border_left, border_top, border_bottom;
 	int counter;
 	boolean finished;
+	String role;
 
 	Sudoku_Block[] Block;
 
@@ -25,12 +32,16 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 	Show_next show_next;
 	Solve solve;
 	Timer timer;
+	Show_Solution show_solution;
+	Finish_Button finish;
 
-	Board(int NumberofBlocks, int block_width, int block_height) {
+	Board(int NumberofBlocks, int block_width, int block_height, String role) {
 
 		setLayout(null);
 		setFocusable(true);
 		finished = false;
+		this.role = role;
+		index_in_file = -1;
 
 		Block = new Sudoku_Block[NumberofBlocks * NumberofBlocks];
 		this.NumberofBlocks = NumberofBlocks;
@@ -44,41 +55,54 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		setLocation(500, 100);
 		setTitle("Sudoku");
 
-		timer = new Timer();
-		timer.setOpaque(true);
-		timer.setBounds(550, 50, 200, 100);
+		if (role.equals("play")) {
+			timer = new Timer();
+			timer.setOpaque(true);
+			timer.setBounds(550, 50, 200, 80);
 
-		add(timer);
-		Thread time = new Thread(timer);
-		time.start();
+			add(timer);
+			Thread time = new Thread(timer);
+			time.start();
 
-		mistakes = new Mistakes(3);
-		mistakes.setBounds(550, 160, 200, 100);
-		add(mistakes);
+			mistakes = new Mistakes(3);
+			mistakes.setBounds(550, 140, 200, 80);
+			add(mistakes);
 
-		Candidate = new Candidates();
-		Candidate.setBounds(550, 270, 200, 100);
-		add(Candidate);
-		Candidate.addActionListener(this);
+			Candidate = new Candidates();
+			Candidate.setBounds(550, 230, 200, 80);
+			add(Candidate);
+			Candidate.addActionListener(this);
 
-		hint = new Hint();
-		add(hint);
-		hint.setBounds(550, 380, 200, 100);
-		hint.addActionListener(this);
+			hint = new Hint();
+			add(hint);
+			hint.setBounds(550, 320, 200, 80);
+			hint.addActionListener(this);
+
+			show_next = new Show_next();
+			add(show_next);
+			show_next.setBounds(550, 410, 200, 80);
+			show_next.addActionListener(this);
+
+			solve = new Solve();
+			add(solve);
+			solve.setBounds(550, 500, 200, 80);
+			solve.addActionListener(this);
+
+			show_solution = new Show_Solution();
+			add(show_solution);
+			show_solution.setBounds(550, 590, 200, 80);
+			show_solution.addActionListener(this);
+
+		} else {
+			finish = new Finish_Button();
+			add(finish);
+			finish.setBounds(550, 300, 200, 80);
+			finish.addActionListener(this);
+		}
 
 		info = new Info();
 		add(info);
 		info.setBounds(30, 510, 500, 150);
-
-		show_next = new Show_next();
-		add(show_next);
-		show_next.setBounds(550, 490, 200, 100);
-		show_next.addActionListener(this);
-
-		solve = new Solve();
-		add(solve);
-		solve.setBounds(550, 600, 200, 100);
-		solve.addActionListener(this);
 
 	}
 
@@ -104,7 +128,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		finished = true;
 		timer.off();
 	}
-	
+
 	public void lose() {
 		info.setText("You've reahced limit of mistakes!");
 		finished = true;
@@ -205,7 +229,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 
 			int first_block_row = block - block % block_height;
 			int first_block_column = (block % block_height) * block_width;
-				
+
 			for (int i = 0; i < block_height; i++) { // row in block
 				for (int j = 0; j < block_width; j++) { // column in block
 
@@ -264,7 +288,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 
 		return counter;
 	}
-	
+
 	public void next(String method, String place, int row, int column, int digit) {
 
 		int block_index = row * NumberofBlocks + column;
@@ -288,7 +312,6 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 			win();
 
 	}
-	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -312,8 +335,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				Hidden_Single if_hidden = HiddenSingle();
 
 				if (if_hidden.getfound())
-					info.setText("<html>Hidden single: Exist one field in " + if_hidden.info_place_Hidden_Single(block_width, block_height)
-							+ "where number " + if_hidden.digit + " can be written!</html>");
+					info.setText("<html>Hidden single: Exist one field in "
+							+ if_hidden.info_place_Hidden_Single(block_width, block_height) + "where number "
+							+ if_hidden.digit + " can be written!</html>");
 
 				else {
 
@@ -335,8 +359,8 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				Hidden_Single if_hidden = HiddenSingle();
 
 				if (if_hidden.getfound())
-					next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height), if_hidden.row, if_hidden.column,
-							if_hidden.digit);
+					next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height), if_hidden.row,
+							if_hidden.column, if_hidden.digit);
 
 				else {
 
@@ -359,8 +383,8 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 					Hidden_Single if_hidden = HiddenSingle();
 
 					if (if_hidden.getfound())
-						next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height), if_hidden.row, if_hidden.column,
-								if_hidden.digit);
+						next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height),
+								if_hidden.row, if_hidden.column, if_hidden.digit);
 
 					else {
 
@@ -375,6 +399,70 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 					}
 
 				} while (!finished && info.getText() != "I didn't find any hint!");
+			}
+		} else if (source == finish) {
+
+			Board game = null;
+
+			if (this instanceof Sudoku_6x6)
+				game = new Sudoku_6x6("play");
+			else if (this instanceof Classic_Sudoku)
+				game = new Classic_Sudoku("play");
+
+			for (int i = 0; i < this.NumberofBlocks * this.NumberofBlocks; i++) {
+				if (!Block[i].empty) {
+					int digit = Integer.parseInt(Block[i].getText());
+					digit--;
+					game.Block[i].setText(Block[i].getText());
+					game.Candidates_Update(digit, i / this.NumberofBlocks, i % this.NumberofBlocks);
+
+					game.counter++;
+					game.Block[i].empty = false;
+					game.info.setText("Info");
+					game.Block[i].setBackground(Color.white);
+					game.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
+					game.Block[i].setForeground(Color.black);
+					game.Block[i].enabled = !game.Block[i].enabled;
+				}
+			}
+
+			game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			game.setVisible(true);
+			dispose();
+		} else if (source == show_solution) {
+			if (index_in_file == -1)
+				info.setText("I can't find solution in file!");
+			else {
+
+				Path input = Paths.get("./Boards.txt");
+
+				List<String> pages = null;
+
+				try {
+
+					pages = Files.readAllLines(input, Charset.forName("UTF-8"));
+
+				} catch (IOException e1) {
+
+					e1.printStackTrace();
+				}
+
+				String[] load = pages.get(index_in_file + 1).split(" ");
+
+				for (int i = 0; i < NumberofBlocks * NumberofBlocks; i++) {
+					if (Block[i].empty) {
+
+						Block[i].setText(load[i]);
+						Block[i].setBackground(Color.blue);
+						Block[i].setFont(new Font("Arial", Font.BOLD, 30));
+						Block[i].setForeground(Color.black);
+						Block[i].enabled = !Block[i].enabled;
+					}
+
+				}
+				info.setText("Solution");
+				finished = true;
+				timer.off();
 			}
 		}
 	}

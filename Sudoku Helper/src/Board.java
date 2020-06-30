@@ -22,6 +22,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 	int counter;
 	boolean finished;
 	String role;
+	MenuBar Bar;
 
 	Sudoku_Block[] Block;
 
@@ -48,12 +49,16 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		this.block_width = block_width;
 		this.block_height = block_height;
 
-		MenuBar Bar = new MenuBar();
+		Bar = new MenuBar();
 		setJMenuBar(Bar);
 		setSize(800, 800);
 		setResizable(false);
 		setLocation(500, 100);
 		setTitle("Sudoku");
+		Bar.Main_Menu.addActionListener(this);
+		Bar.Restart.addActionListener(this);
+		Bar.Save.addActionListener(this);
+		Bar.Load.addActionListener(this);
 
 		if (role.equals("play")) {
 			timer = new Timer();
@@ -464,6 +469,74 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				finished = true;
 				timer.off();
 			}
+		} else if (source == Bar.Main_Menu) {
+			Main_menu menu = new Main_menu();
+			menu.setVisible(true);
+			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			dispose();
+		} else if (source == Bar.Restart) {
+			if (index_in_file == -1) {
+				info.setText("I didnt find oryginal version of this sudoku!");
+			} else {
+				Board board;
+				if (this instanceof Classic_Sudoku)
+					board = new Classic_Sudoku("play");
+				else
+					board = new Sudoku_6x6("play");
+
+				Path input = Paths.get("./Boards.txt");
+
+				List<String> pages = null;
+
+				try {
+
+					pages = Files.readAllLines(input, Charset.forName("UTF-8"));
+
+				} catch (IOException e1) {
+
+					e1.printStackTrace();
+				}
+
+				String[] load = pages.get(index_in_file).split(" ");
+
+				for (int i = 0; i < NumberofBlocks * NumberofBlocks; i++) {
+					if (!load[i].equals("0")) {
+
+						board.Block[i].setText(load[i]);
+						board.Block[i].setBackground(Color.white);
+						board.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
+						board.Block[i].setForeground(Color.black);
+						board.Block[i].enabled = !Block[i].enabled;
+						board.Block[i].empty= false;
+						board.counter++;
+						board.index_in_file = index_in_file;
+						board.Candidates_Update(Integer.parseInt(load[i]) - 1, i / board.NumberofBlocks,
+								i % board.NumberofBlocks);
+					}
+
+				}
+				board.setVisible(true);
+				board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				dispose();
+			}
+		} else if (source == Bar.Save) {
+			Saved_Sudoku save;
+			if (this instanceof Classic_Sudoku) 
+				save = new Saved_Sudoku("Classic_Sudoku", this);
+			else
+				save = new Saved_Sudoku("Sudoku_6x6", this);
+			
+			save.setVisible(true);
+			//save.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		} else if (source == Bar.Load) {
+			Load load = null;
+			try {
+				load = new Load(this);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			load.setVisible(true);
 		}
 	}
 }

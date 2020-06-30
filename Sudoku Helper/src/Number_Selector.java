@@ -6,6 +6,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
@@ -81,7 +87,91 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 										.getText()) == number)
 					return blunder.Made_Blunder(first_block_row + j, first_block_column + k);
 
+		if (board.index_in_file > -1) {
+
+			Path input = Paths.get("./boards.txt");
+			List<String> pages = null;
+			
+			try {
+				
+				pages = Files.readAllLines(input, Charset.forName("UTF-8"));
+				
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+				
+			}
+			
+			String[] copy = pages.get(board.index_in_file + 1).split(" ");
+			
+			if (Integer.parseInt(copy[x * board.NumberofBlocks + y]) != number) {
+				
+				blunder.setcorrectness_not_defined();
+				return blunder.Made_Blunder(x, y);
+				
+			}
+		}
+
 		return blunder;
+	}
+
+	public void if_candidates(int number) {
+		
+		buttoninstance.Player_Candidates[number] = !buttoninstance.Player_Candidates[number];
+		buttoninstance.print();
+		board.info.setText("Info");
+		buttoninstance.setBackground(Color.white);
+		buttoninstance.setForeground(Color.black);
+
+		Sudoku_Block.counter = !Sudoku_Block.counter;
+
+		dispose();
+	}
+
+	public void if_error(Blunder test, int number, String role) {
+
+		board.mistakes.new_error();
+		if (test.correctness_not_defined)
+			board.info.setText("<html>Incorrect number!</html>");
+		else
+			board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:" + (test.GetY() + 1)
+				+ " number " + (number + 1) + " already exist!</html>");
+
+		buttoninstance.setBackground(Color.red);
+		buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
+		buttoninstance.setForeground(Color.black);
+		buttoninstance.setText(Integer.toString(number + 1));
+
+		Sudoku_Block.counter = !Sudoku_Block.counter;
+		
+		if (role.equals("play"))
+			if (board.mistakes.limit) {
+				if (test.correctness_not_defined)
+					board.info.setText("<html>Incorrect number!<br/> You reach maximum limit of mistakes!</html>");
+				else
+					board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:"
+						+ (test.GetY() + 1) + " number " + (number + 1)
+						+ " already exist! <br/> You reach maximum limit of mistakes!</html>");
+
+				board.lose();
+
+			}
+		
+		dispose();
+
+	}
+
+	public void if_correct(int number) {
+
+		buttoninstance.empty = false;
+		board.info.setText("Info");
+		buttoninstance.setBackground(Color.white);
+		buttoninstance.setText(Integer.toString(number + 1));
+		buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
+		buttoninstance.setForeground(Color.black);
+		Sudoku_Block.counter = !Sudoku_Block.counter;
+		dispose();
+
 	}
 
 	@Override
@@ -93,88 +183,40 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 			if (source == Numbers[i] && role.equals("play")) {
 
-				if (board.Candidate.on_off) {
+				if (board.Candidate.on_off)
+					if_candidates(i);
 
-					buttoninstance.Player_Candidates[i] = !buttoninstance.Player_Candidates[i];
-					buttoninstance.print();
-					board.info.setText("Info");
-					buttoninstance.setBackground(Color.white);
-					buttoninstance.setForeground(Color.black);
-
-					Sudoku_Block.counter = !Sudoku_Block.counter;
-
-					dispose();
-
-				} else {
+				else {
 
 					Blunder test = correct(i + 1);
 
-					if (test.made_blunder()) {
+					if (test.made_blunder())
+						if_error(test, i, "play");
 
-						board.mistakes.new_error();
+					else {
 
-						board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:"
-								+ (test.GetY() + 1) + " number " + (i + 1) + " already exist!</html>");
-
-						buttoninstance.setBackground(Color.red);
-						buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-						buttoninstance.setForeground(Color.black);
-						buttoninstance.setText(Integer.toString(i + 1));
-
-						Sudoku_Block.counter = !Sudoku_Block.counter;
-
-						if (board.mistakes.limit) {
-							board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:"
-									+ (test.GetY() + 1) + " number " + (i + 1)
-									+ " already exist! <br/> You reach maximum limit of mistakes!</html>");
-
-							board.lose();
-
-						}
-						dispose();
-					} else {
 						board.Candidates_Update(i, x, y);
 						board.counter++;
+
 						if (board.counter == board.NumberofBlocks * board.NumberofBlocks) {
 							board.timer.off();
 							board.win();
 						}
-						buttoninstance.empty = false;
-						board.info.setText("Info");
-						buttoninstance.setBackground(Color.white);
-						buttoninstance.setText(Integer.toString(i + 1));
-						buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-						buttoninstance.setForeground(Color.black);
-						Sudoku_Block.counter = !Sudoku_Block.counter;
+
 						buttoninstance.enabled = !buttoninstance.enabled;
-						dispose();
+
+						if_correct(i);
 					}
 				}
 			} else if (source == Numbers[i]) {
+
 				Blunder test = correct(i + 1);
 
-				if (test.made_blunder()) {
+				if (test.made_blunder())
+					if_error(test, i, "edit");
 
-					board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:"
-							+ (test.GetY() + 1) + " number " + (i + 1) + " already exist!</html>");
-
-					buttoninstance.setBackground(Color.red);
-					buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-					buttoninstance.setForeground(Color.black);
-					buttoninstance.setText(Integer.toString(i + 1));
-
-					Sudoku_Block.counter = !Sudoku_Block.counter;
-					
-					dispose();
-				} else {
-				buttoninstance.empty = false;
-				buttoninstance.setBackground(Color.white);
-				buttoninstance.setText(Integer.toString(i + 1));
-				buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-				buttoninstance.setForeground(Color.black);
-				Sudoku_Block.counter = !Sudoku_Block.counter;
-				dispose();
-				}
+				else
+					if_correct(i);
 			}
 		}
 	}
@@ -190,117 +232,66 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 			if (role.equals("play")) {
 
-				if (board.Candidate.on_off) {
-					buttoninstance.Player_Candidates[chr] = !buttoninstance.Player_Candidates[chr];
-					buttoninstance.print();
-					board.info.setText("Info");
-					buttoninstance.setBackground(Color.white);
-					buttoninstance.setForeground(Color.black);
-					Sudoku_Block.counter = !Sudoku_Block.counter;
-					dispose();
-				} else {
+				if (board.Candidate.on_off)
+					if_candidates(chr);
+
+				else {
+
 					Blunder test = correct(chr + 1);
-					if (test.made_blunder()) {
-						board.mistakes.new_error();
-						board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:"
-								+ (test.GetY() + 1) + " number " + (chr + 1) + " already exist!</html>");
-						buttoninstance.setBackground(Color.red);
-						buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-						buttoninstance.setForeground(Color.black);
-						buttoninstance.setText(Integer.toString(chr + 1));
-						Sudoku_Block.counter = !Sudoku_Block.counter;
-						dispose();
-					} else {
+
+					if (test.made_blunder())
+						if_error(test, chr, "play");
+
+					else {
+
 						board.Candidates_Update(chr, x, y);
 						board.counter++;
+
 						if (board.counter == board.NumberofBlocks * board.NumberofBlocks) {
 							board.timer.off();
 							board.win();
 						}
-						buttoninstance.empty = false;
-						board.info.setText("Info");
-						buttoninstance.setBackground(Color.white);
-						buttoninstance.setText(Integer.toString(chr + 1));
-						buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-						buttoninstance.setForeground(Color.black);
-						Sudoku_Block.counter = !Sudoku_Block.counter;
+
 						buttoninstance.enabled = !buttoninstance.enabled;
-						dispose();
+						if_correct(chr);
 					}
 				}
 			} else {
 				Blunder test = correct(chr + 1);
 
-				if (test.made_blunder()) {
-					board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:"
-							+ (test.GetY() + 1) + " number " + (chr + 1) + " already exist!</html>");
-					buttoninstance.setBackground(Color.red);
-					buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-					buttoninstance.setForeground(Color.black);
-					buttoninstance.setText(Integer.toString(chr + 1));
-					Sudoku_Block.counter = !Sudoku_Block.counter;
-					dispose();
-				} else {
-					buttoninstance.empty = false;
-					buttoninstance.setBackground(Color.white);
-					buttoninstance.setText(Integer.toString(chr + 1));
-					buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));
-					buttoninstance.setForeground(Color.black);
-					Sudoku_Block.counter = !Sudoku_Block.counter;
-					dispose();
-				}
+				if (test.made_blunder())
+					if_error(test, chr, "edit");
+
+				else
+					if_correct(chr);
+
 			}
 		}
 	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-	}
-
-	@Override
-	public void windowOpened(WindowEvent e) {
-
-	}
-
+	
 	@Override
 	public void windowClosing(WindowEvent e) {
+		
 		buttoninstance.setBackground(Color.white);
 		Sudoku_Block.counter = !Sudoku_Block.counter;
 
 	}
-
+	
 	@Override
-	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void keyPressed(KeyEvent e) {}
 	@Override
-	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void keyReleased(KeyEvent e) {}
 	@Override
-	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void windowOpened(WindowEvent e) {}
 	@Override
-	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
+	public void windowClosed(WindowEvent e) {}
 	@Override
-	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	public void windowIconified(WindowEvent e) {}
+	@Override
+	public void windowDeiconified(WindowEvent e) {}
+	@Override
+	public void windowActivated(WindowEvent e) {}
+	@Override
+	public void windowDeactivated(WindowEvent e) {}
 
 }

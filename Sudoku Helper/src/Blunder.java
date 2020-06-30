@@ -2,10 +2,12 @@
 public class Blunder {
 	
 	boolean correctness;
+	boolean correctness_not_defined;
 	private int x, y;
 
 	Blunder() {
 		correctness = true;
+		correctness_not_defined = false;
 	}
 
 	Blunder Made_Blunder(int x, int y) {
@@ -25,5 +27,9 @@ public class Blunder {
 
 	public int GetY() {
 		return y;
+	}
+	
+	public void setcorrectness_not_defined() {
+		correctness_not_defined = true;
 	}
 }

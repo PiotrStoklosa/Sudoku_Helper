@@ -92,6 +92,7 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 				board.Block[i].setText(Integer.toString(digit));
 				board.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
 				board.Block[i].setForeground(Color.black);
+				board.Block[i].enabled = false;
 
 			}
 		}

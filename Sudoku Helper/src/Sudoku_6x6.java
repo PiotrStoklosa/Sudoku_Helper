@@ -13,41 +13,41 @@ public class Sudoku_6x6 extends Board implements ActionListener, MouseListener{
 
 		super(6, 3, 2, role);
 
-		counter = 0;
+		setCountertoNull();
 
-		for (int i = 0; i < NumberofBlocks; i++)
-			for (int j = 0; j < NumberofBlocks; j++) {
+		for (int i = 0; i < getNumberofBlocks(); i++)
+			for (int j = 0; j < getNumberofBlocks(); j++) {
 
-				Block[i * NumberofBlocks + j] = new Sudoku_Block(50 + 50 * j, 50 + 50 * i, NumberofBlocks);
-				Block[i * NumberofBlocks + j].addMouseListener(this);
-				Block[i * NumberofBlocks + j].setOpaque(true);
-				Block[i * NumberofBlocks + j].setHorizontalAlignment(JLabel.CENTER);
-				Block[i * NumberofBlocks + j].setVerticalAlignment(JLabel.CENTER);
-				Block[i * NumberofBlocks + j].setBackground(Color.white);
+				Block[i * getNumberofBlocks() + j] = new Sudoku_Block(50 + 50 * j, 50 + 50 * i, getNumberofBlocks());
+				Block[i * getNumberofBlocks() + j].addMouseListener(this);
+				Block[i * getNumberofBlocks() + j].setOpaque(true);
+				Block[i * getNumberofBlocks() + j].setHorizontalAlignment(JLabel.CENTER);
+				Block[i * getNumberofBlocks() + j].setVerticalAlignment(JLabel.CENTER);
+				Block[i * getNumberofBlocks() + j].setBackground(Color.white);
 
-				border_right = 3;
-				border_left = 3;
-				border_top = 3;
-				border_bottom = 3;
+				setBorder_right(3);
+				setBorder_left(3);
+				setBorder_top(3);
+				setBorder_bottom(3);
 				// set appropriate borders to board
 
 				if (j == 2 )
-					border_right = 5;
+					setBorder_right(5);
 
 				if (j == 3)
-					border_left = 5;
+					setBorder_left(5);
 
 				if (i == 1 || i == 3)
-					border_bottom = 5;
+					setBorder_bottom(5);
 
 				if (i == 2 || i == 4)
-					border_top = 5;
+					setBorder_top(5);
 
-				Block[i * NumberofBlocks + j].setBorder(BorderFactory.createMatteBorder(border_top, border_left,
-						border_bottom, border_right, Color.BLACK));
-				Block[i * NumberofBlocks + j].setBounds(100 + 50 * j, 100 + 50 * i, 50, 50);
+				Block[i * getNumberofBlocks() + j].setBorder(BorderFactory.createMatteBorder(getBorder_top(), getBorder_left(),
+						getBorder_bottom(), getBorder_right(), Color.BLACK));
+				Block[i * getNumberofBlocks() + j].setBounds(100 + 50 * j, 100 + 50 * i, 50, 50);
 
-				add(Block[i * NumberofBlocks + j]);
+				add(Block[i * getNumberofBlocks() + j]);
 
 			}
 	}
@@ -56,17 +56,17 @@ public class Sudoku_6x6 extends Board implements ActionListener, MouseListener{
 	public void mouseClicked(MouseEvent e) {
 
 		Object source = e.getSource();
-		if (!finished) {
+		if (!isFinished()) {
 
-			for (int i = 0; i < NumberofBlocks; i++)
-				for (int j = 0; j < NumberofBlocks; j++) {
+			for (int i = 0; i < getNumberofBlocks(); i++)
+				for (int j = 0; j < getNumberofBlocks(); j++) {
 
-					if (source == Block[i * NumberofBlocks + j] && Block[i * NumberofBlocks + j].enabled
+					if (source == Block[i * getNumberofBlocks() + j] && Block[i * getNumberofBlocks() + j].enabled
 							&& Sudoku_Block.counter) {
 
 						Sudoku_Block.counter = !Sudoku_Block.counter;
 
-						Block[i * NumberofBlocks + j].setBackground(new Color(0x83, 0xA3, 0x8C));
+						Block[i * getNumberofBlocks() + j].setBackground(new Color(0x83, 0xA3, 0x8C));
 
 						Number_Selector select = new Number_Selector(i, j, this, "play");
 

@@ -37,7 +37,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		addWindowListener(this);
 		setFocusable(true);
 
-		buttoninstance = board.Block[x * board.NumberofBlocks + y];
+		buttoninstance = board.Block[x * board.getNumberofBlocks() + y];
 
 		setSize(200, 235);
 		setResizable(false);
@@ -45,18 +45,18 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		setLayout(null);
 		setTitle("Select number");
 
-		Numbers = new JButton[board.NumberofBlocks];
+		Numbers = new JButton[board.getNumberofBlocks()];
 
-		for (int i = 0; i < Math.floor(Math.sqrt(board.NumberofBlocks)); i++)
-			for (int j = 0; j < board.NumberofBlocks / Math.floor(Math.sqrt(board.NumberofBlocks)); j++) {
+		for (int i = 0; i < Math.floor(Math.sqrt(board.getNumberofBlocks())); i++)
+			for (int j = 0; j < board.getNumberofBlocks() / Math.floor(Math.sqrt(board.getNumberofBlocks())); j++) {
 
-				Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)] = new JButton(
-						Integer.toString((int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i) + 1));
-				Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)].setBounds(20 + 50 * i, 20 + 50 * j,
+				Numbers[(int) (j * Math.floor(Math.sqrt(board.getNumberofBlocks())) + i)] = new JButton(
+						Integer.toString((int) (j * Math.floor(Math.sqrt(board.getNumberofBlocks())) + i) + 1));
+				Numbers[(int) (j * Math.floor(Math.sqrt(board.getNumberofBlocks())) + i)].setBounds(20 + 50 * i, 20 + 50 * j,
 						41, 41);
 
-				add(Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)]);
-				Numbers[(int) (j * Math.floor(Math.sqrt(board.NumberofBlocks)) + i)].addActionListener(this);
+				add(Numbers[(int) (j * Math.floor(Math.sqrt(board.getNumberofBlocks())) + i)]);
+				Numbers[(int) (j * Math.floor(Math.sqrt(board.getNumberofBlocks())) + i)].addActionListener(this);
 			}
 	}
 
@@ -64,30 +64,30 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 		Blunder blunder = new Blunder();
 
-		for (int i = x * board.NumberofBlocks; i < x * board.NumberofBlocks + board.NumberofBlocks; i++) {
+		for (int i = x * board.getNumberofBlocks(); i < x * board.getNumberofBlocks() + board.getNumberofBlocks(); i++) {
 
 			if (!board.Block[i].getEmpty() && Integer.parseInt(board.Block[i].getText()) == number)
 
-				return blunder.Made_Blunder(x, i % board.NumberofBlocks);
+				return blunder.Made_Blunder(x, i % board.getNumberofBlocks());
 		}
 
-		for (int i = y; i < board.NumberofBlocks * board.NumberofBlocks; i += board.NumberofBlocks)
+		for (int i = y; i < board.getNumberofBlocks() * board.getNumberofBlocks(); i += board.getNumberofBlocks())
 			if (!board.Block[i].getEmpty() && Integer.parseInt(board.Block[i].getText()) == number)
 
-				return blunder.Made_Blunder(i / board.NumberofBlocks, y);
+				return blunder.Made_Blunder(i / board.getNumberofBlocks(), y);
 
-		int first_block_row = x - x % board.block_height;
-		int first_block_column = y - y % board.block_width;
+		int first_block_row = x - x % board.getBlock_height();
+		int first_block_column = y - y % board.getBlock_width();
 
-		for (int j = 0; j < board.block_height; j++)
-			for (int k = 0; k < board.block_width; k++)
-				if (!board.Block[(first_block_row + j) * board.NumberofBlocks + first_block_column + k].getEmpty()
+		for (int j = 0; j < board.getBlock_height(); j++)
+			for (int k = 0; k < board.getBlock_width(); k++)
+				if (!board.Block[(first_block_row + j) * board.getNumberofBlocks() + first_block_column + k].getEmpty()
 						&& Integer.parseInt(
-								board.Block[(first_block_row + j) * board.NumberofBlocks + first_block_column + k]
+								board.Block[(first_block_row + j) * board.getNumberofBlocks() + first_block_column + k]
 										.getText()) == number)
 					return blunder.Made_Blunder(first_block_row + j, first_block_column + k);
 
-		if (board.index_in_file > -1) {
+		if (board.getIndex_in_file() > -1) {
 
 			Path input = Paths.get("./boards.txt");
 			List<String> pages = null;
@@ -102,11 +102,11 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 				
 			}
 			
-			String[] copy = pages.get(board.index_in_file + 1).split(" ");
+			String[] copy = pages.get(board.getIndex_in_file() + 1).split(" ");
 			
-			if (Integer.parseInt(copy[x * board.NumberofBlocks + y]) != number) {
+			if (Integer.parseInt(copy[x * board.getNumberofBlocks() + y]) != number) {
 				
-				blunder.setcorrectness_not_defined();
+				blunder.setCorrectness_not_defined();
 				return blunder.Made_Blunder(x, y);
 				
 			}
@@ -131,7 +131,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 	public void if_error(Blunder test, int number, String role) {
 
 		board.mistakes.new_error();
-		if (test.correctness_not_defined)
+		if (test.isCorrectness_not_defined())
 			board.info.setText("<html>Incorrect number!</html>");
 		else
 			board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:" + (test.GetY() + 1)
@@ -146,7 +146,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		
 		if (role.equals("play"))
 			if (board.mistakes.limit) {
-				if (test.correctness_not_defined)
+				if (test.isCorrectness_not_defined())
 					board.info.setText("<html>Incorrect number!<br/> You reach maximum limit of mistakes!</html>");
 				else
 					board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:"
@@ -179,7 +179,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 		Object source = e.getSource();
 
-		for (int i = 0; i < board.NumberofBlocks; i++) {
+		for (int i = 0; i < board.getNumberofBlocks(); i++) {
 
 			if (source == Numbers[i] && role.equals("play")) {
 
@@ -196,9 +196,9 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 					else {
 
 						board.Candidates_Update(i, x, y);
-						board.counter++;
+						board.IncreaseCounter();
 
-						if (board.counter == board.NumberofBlocks * board.NumberofBlocks) {
+						if (board.getCounter() == board.getNumberofBlocks() * board.getNumberofBlocks()) {
 							board.timer.off();
 							board.win();
 						}
@@ -245,9 +245,9 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 					else {
 
 						board.Candidates_Update(chr, x, y);
-						board.counter++;
+						board.IncreaseCounter();
 
-						if (board.counter == board.NumberofBlocks * board.NumberofBlocks) {
+						if (board.getCounter() == board.getNumberofBlocks() * board.getNumberofBlocks()) {
 							board.timer.off();
 							board.win();
 						}

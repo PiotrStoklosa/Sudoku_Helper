@@ -74,7 +74,7 @@ public class Load extends JFrame {
 				for (int i=0; i<mistakes; i++)
 					loaded_sudoku.mistakes.new_error();
 				
-				for (int i=0; i< loaded_sudoku.NumberofBlocks * loaded_sudoku.NumberofBlocks; i++)
+				for (int i=0; i< loaded_sudoku.getNumberofBlocks() * loaded_sudoku.getNumberofBlocks(); i++)
 					if (!loaded_board[i+5].equals("0")) {
 						loaded_sudoku.Block[i].setText(loaded_board[i+5]);
 						loaded_sudoku.Block[i].setBackground(Color.white);
@@ -82,9 +82,9 @@ public class Load extends JFrame {
 						loaded_sudoku.Block[i].setForeground(Color.black);
 						loaded_sudoku.Block[i].enabled = !loaded_sudoku.Block[i].enabled;
 						loaded_sudoku.Block[i].empty= false;
-						loaded_sudoku.counter++;
-						loaded_sudoku.Candidates_Update(Integer.parseInt(loaded_board[i+5]) - 1, i / loaded_sudoku.NumberofBlocks,
-								i % board.NumberofBlocks);
+						loaded_sudoku.IncreaseCounter();
+						loaded_sudoku.Candidates_Update(Integer.parseInt(loaded_board[i+5]) - 1, i / loaded_sudoku.getNumberofBlocks(),
+								i % board.getNumberofBlocks());
 					}
 				loaded_sudoku.setVisible(true);
 				loaded_sudoku.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

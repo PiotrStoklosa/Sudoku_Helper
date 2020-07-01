@@ -9,7 +9,9 @@ public class Create_Menu extends JFrame implements ActionListener{
 
 	JButton ClassicSudoku, Sudoku6x6;
 	
-	Create_Menu(){
+	private static Create_Menu singleton_instance = null; 
+	
+	private Create_Menu(){
 		
 		setTitle("Create menu");
 		
@@ -37,6 +39,13 @@ public class Create_Menu extends JFrame implements ActionListener{
 		
 	}
 
+	public static Create_Menu getInstance() {
+	      if (singleton_instance == null)
+	    	  singleton_instance = new Create_Menu();
+	      
+	      return singleton_instance;
+	   }
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		

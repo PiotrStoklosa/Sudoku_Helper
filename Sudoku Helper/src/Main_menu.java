@@ -8,8 +8,10 @@ public class Main_menu extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 8386246453907190702L;
 	
 	JButton play, create, exit;
+	
+	private static Main_menu singleton_instance = null;
 
-	Main_menu() {
+	private Main_menu() {
 		
 		setFocusable(true);
 		setSize(300, 300);
@@ -38,6 +40,13 @@ public class Main_menu extends JFrame implements ActionListener {
 		
 	}
 
+	public static Main_menu getInstance() {
+	      if (singleton_instance == null)
+	    	  singleton_instance = new Main_menu();
+	      
+	      return singleton_instance;
+	   }
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -46,14 +55,14 @@ public class Main_menu extends JFrame implements ActionListener {
 		
 		
 		if (source == play) {
-			Menu_Difficulty_Level menu = new Menu_Difficulty_Level("play");
+			Menu_Difficulty_Level menu = Menu_Difficulty_Level.getInstance();
 			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			menu.setVisible(true);
 		}
 		
 		if (source == create) {
 			
-			Create_Menu menu = new Create_Menu();
+			Create_Menu menu = Create_Menu.getInstance();
 			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			menu.setVisible(true);
 			

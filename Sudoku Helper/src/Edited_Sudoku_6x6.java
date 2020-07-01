@@ -15,14 +15,14 @@ public class Edited_Sudoku_6x6 extends Sudoku_6x6 {
 	public void mouseClicked(MouseEvent e) {
 
 		Object source = e.getSource();
-		for (int i = 0; i < NumberofBlocks; i++)
-			for (int j = 0; j < NumberofBlocks; j++) {
+		for (int i = 0; i < getNumberofBlocks(); i++)
+			for (int j = 0; j < getNumberofBlocks(); j++) {
 
-				if (source == Block[i * NumberofBlocks + j] && Sudoku_Block.counter) {
+				if (source == Block[i * getNumberofBlocks() + j] && Sudoku_Block.counter) {
 
 					Sudoku_Block.counter = !Sudoku_Block.counter;
 
-					Block[i * NumberofBlocks + j].setBackground(new Color(0x83, 0xA3, 0x8C));
+					Block[i * getNumberofBlocks() + j].setBackground(new Color(0x83, 0xA3, 0x8C));
 
 					Number_Selector select = new Number_Selector(i, j, this, "edit");
 

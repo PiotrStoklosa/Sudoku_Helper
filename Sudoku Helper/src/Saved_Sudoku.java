@@ -23,7 +23,7 @@ public class Saved_Sudoku extends JFrame implements ActionListener{
 	
 	Saved_Sudoku(String type, Board board){
 		
-		for (int i=0; i< board.NumberofBlocks * board.NumberofBlocks; i++) {
+		for (int i=0; i< board.getNumberofBlocks() * board.getNumberofBlocks(); i++) {
 			if (board.Block[i].empty) 
 				this.board += "0 ";
 			
@@ -38,11 +38,6 @@ public class Saved_Sudoku extends JFrame implements ActionListener{
 		seconds = Integer.toString(board.timer.seconds);
 		mistakes = Integer.toString(board.mistakes.Current_errors);
 		
-		/*if (board.timer.minutes < 10)
-			minutes = '0' + Integer.toString(board.timer.minutes);
-			
-		if (board.timer.seconds < 10)
-			seconds = '0' + Integer.toString(board.timer.minutes);*/
 		
 		this.type = type;
 		

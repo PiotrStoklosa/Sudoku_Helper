@@ -8,33 +8,108 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
 import javax.swing.JFrame;
 
-public abstract class Board extends JFrame implements ActionListener, Methods {
+public abstract class Board extends JFrame implements ActionListener, Methods, Observer {
 
 	private static final long serialVersionUID = 2589826376003918979L;
 
-	int NumberofBlocks;
-	int index_in_file;
-	int block_width, block_height;
-	int border_right, border_left, border_top, border_bottom;
-	int counter;
-	boolean finished;
-	String role;
-	MenuBar Bar;
+	private int NumberofBlocks;
+	private int index_in_file;
+	private int block_width, block_height;
+	private int border_right, border_left, border_top, border_bottom;
+	private int counter;
+	private boolean finished;
+	private String role;
+	protected MenuBar Bar;
 
-	Sudoku_Block[] Block;
+	protected Sudoku_Block[] Block;
 
-	Candidates Candidate;
-	Hint hint;
-	Info info;
-	Mistakes mistakes;
-	Show_next show_next;
-	Solve solve;
-	Timer timer;
-	Show_Solution show_solution;
-	Finish_Button finish;
+	protected Candidates Candidate;
+	protected Hint hint;
+	protected Info info;
+	protected Mistakes mistakes;
+	protected Show_next show_next;
+	protected Solve solve;
+	protected Timer timer;
+	protected Show_Solution show_solution;
+	protected Finish_Button finish;
+
+	/*
+	 * getters and setters
+	 */
+
+	public int getIndex_in_file() {
+		return index_in_file;
+	}
+
+	public void setIndex_in_file(int index_in_file) {
+		this.index_in_file = index_in_file;
+	}
+
+	public int getBlock_width() {
+		return block_width;
+	}
+
+	public int getBlock_height() {
+		return block_height;
+	}
+
+	protected int getBorder_right() {
+		return border_right;
+	}
+
+	protected void setBorder_right(int border_right) {
+		this.border_right = border_right;
+	}
+
+	protected int getBorder_left() {
+		return border_left;
+	}
+
+	protected void setBorder_left(int border_left) {
+		this.border_left = border_left;
+	}
+
+	protected int getBorder_top() {
+		return border_top;
+	}
+
+	protected void setBorder_top(int border_top) {
+		this.border_top = border_top;
+	}
+
+	protected int getBorder_bottom() {
+		return border_bottom;
+	}
+
+	protected void setBorder_bottom(int border_bottom) {
+		this.border_bottom = border_bottom;
+	}
+
+	public int getCounter() {
+		return counter;
+	}
+
+	protected void setCountertoNull() {
+		counter = 0;
+	}
+
+	public void IncreaseCounter() {
+		counter++;
+	}
+
+	protected boolean isFinished() {
+		return finished;
+	}
+
+	public int getNumberofBlocks() {
+		return NumberofBlocks;
+	}
+
+	/*
+	 * Main constructor
+	 */
 
 	Board(int NumberofBlocks, int block_width, int block_height, String role) {
 
@@ -61,13 +136,11 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 		Bar.Load.addActionListener(this);
 
 		if (role.equals("play")) {
-			timer = new Timer();
+			timer = new Timer(this);
 			timer.setOpaque(true);
 			timer.setBounds(550, 50, 200, 80);
 
 			add(timer);
-			Thread time = new Thread(timer);
-			time.start();
 
 			mistakes = new Mistakes(3);
 			mistakes.setBounds(550, 140, 200, 80);
@@ -111,14 +184,33 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 
 	}
 
-	public void Candidates_Update(int number, int x, int y) {
+	/*
+	 * if end of time (observer)
+	 */
+	@Override
+	public void end_of_time() {
 
+		lose();
+		info.setText("End of time!");
+
+	}
+	/*
+	 * Method for updating candidates after enter a number
+	 */
+	public void Candidates_Update(int number, int x, int y) {
+		/*
+		 * Updating candidates in row
+		 */
 		for (int i = x * NumberofBlocks; i < x * NumberofBlocks + NumberofBlocks; i++)
 			Block[i].All_Candidates[number] = false;
-
+		/*
+		 * Updating candidates in column
+		 */
 		for (int i = y; i < NumberofBlocks * NumberofBlocks; i += NumberofBlocks)
 			Block[i].All_Candidates[number] = false;
-
+		/*
+		 * Updating candidates in the block
+		 */
 		int first_block_row = x - x % block_height;
 		int first_block_column = y - y % block_width;
 
@@ -127,21 +219,26 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				Block[(first_block_row + j) * NumberofBlocks + first_block_column + k].All_Candidates[number] = false;
 
 	}
-
+	/*
+	 * If win
+	 */
 	public void win() {
 		info.setText("<html>Congratulation! You solved this sudoku! <br/>" + timer.getText() + "</html>");
 		finished = true;
 		timer.off();
 	}
-
+	/*
+	 * If lose
+	 */
 	public void lose() {
 		info.setText("You've reahced limit of mistakes!");
 		finished = true;
 		timer.off();
 	}
 
-	// Method Hidden_Single (one function for finding, one for returning)
-
+	/* Method Hidden_Single (one function for finding, one for returning)
+	*
+	*/
 	public Hidden_Single HiddenSingle() {
 
 		for (int i = 0; i < NumberofBlocks / block_height; i++) { // block row
@@ -470,7 +567,8 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 				timer.off();
 			}
 		} else if (source == Bar.Main_Menu) {
-			Main_menu menu = new Main_menu();
+			Main_menu menu = Main_menu.getInstance();
+			;
 			menu.setVisible(true);
 			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			dispose();
@@ -507,7 +605,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 						board.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
 						board.Block[i].setForeground(Color.black);
 						board.Block[i].enabled = !Block[i].enabled;
-						board.Block[i].empty= false;
+						board.Block[i].empty = false;
 						board.counter++;
 						board.index_in_file = index_in_file;
 						board.Candidates_Update(Integer.parseInt(load[i]) - 1, i / board.NumberofBlocks,
@@ -521,20 +619,25 @@ public abstract class Board extends JFrame implements ActionListener, Methods {
 			}
 		} else if (source == Bar.Save) {
 			Saved_Sudoku save;
-			if (this instanceof Classic_Sudoku) 
+			if (this instanceof Classic_Sudoku)
 				save = new Saved_Sudoku("Classic_Sudoku", this);
 			else
 				save = new Saved_Sudoku("Sudoku_6x6", this);
-			
+
 			save.setVisible(true);
-			//save.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		} else if (source == Bar.Load) {
+
 			Load load = null;
+
 			try {
+
 				load = new Load(this);
+
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+
 				e1.printStackTrace();
+
 			}
 			load.setVisible(true);
 		}

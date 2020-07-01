@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -21,12 +20,12 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 	Board board;
 	JButton easy, normal, hard;
 	int amount = 2;
-	String role;
 	JComboBox<String> Type_of_Sudoku;
 
-	Menu_Difficulty_Level(String role) {
+	private static Menu_Difficulty_Level singleton_instance = null;
 
-		this.role = role;
+	private Menu_Difficulty_Level() {
+
 		setFocusable(true);
 		setSize(300, 300);
 		setResizable(false);
@@ -59,11 +58,18 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 		add(Type_of_Sudoku);
 	}
 
+	public static Menu_Difficulty_Level getInstance() {
+		if (singleton_instance == null)
+			singleton_instance = new Menu_Difficulty_Level();
+
+		return singleton_instance;
+	}
+
 	public void Loaded_Board(List<String> pages, String level, String type) {
 
 		Random random = new Random();
 		int offset = random.nextInt(amount);
-		
+
 		offset = 2 * offset + 1;
 		int index = 0;
 		while (!pages.get(index).equals(type))
@@ -74,8 +80,8 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 
 		index += offset;
 
-		board.index_in_file = index;
-		
+		board.setIndex_in_file(index);
+
 		String[] load = pages.get(index).split(" ");
 
 		for (int i = 0; i < load.length; i++) {
@@ -84,8 +90,8 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 
 			if (digit > 0) {
 
-				board.Candidates_Update(digit - 1, i / board.NumberofBlocks, i % board.NumberofBlocks);
-				board.counter++;
+				board.Candidates_Update(digit - 1, i / board.getNumberofBlocks(), i % board.getNumberofBlocks());
+				board.IncreaseCounter();
 				board.Block[i].empty = false;
 				board.info.setText("Info");
 				board.Block[i].setBackground(Color.white);
@@ -105,44 +111,41 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 		Object source = e.getSource();
 
 		String choice = Type_of_Sudoku.getSelectedItem().toString();
-		
-			if (choice == "Classic Sudoku") {
-				board = new Classic_Sudoku("play");
-				
-			} else if (choice == "Sudoku 6x6") {
-				board = new Sudoku_6x6("play");
-			}
+
+		if (choice == "Classic Sudoku") {
+			board = new Classic_Sudoku("play");
+
+		} else if (choice == "Sudoku 6x6") {
+			board = new Sudoku_6x6("play");
+		}
 
 		board.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		board.setVisible(true);
 
-		if (role.contentEquals("play")) {
+		Path input = Paths.get("./Boards.txt");
+		List<String> pages = null;
 
-			Path input = Paths.get("./Boards.txt");
-			List<String> pages = null;
+		try {
 
-			try {
+			pages = Files.readAllLines(input, Charset.forName("UTF-8"));
 
-				pages = Files.readAllLines(input, Charset.forName("UTF-8"));
+		} catch (IOException e1) {
 
-			} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
-				e1.printStackTrace();
-			}
+		if (source == easy) {
+			Loaded_Board(pages, "easy", choice);
+		}
 
-			if (source == easy) {
-				Loaded_Board(pages, "easy", choice);
-			}
+		if (source == normal) {
 
-			if (source == normal) {
+			Loaded_Board(pages, "normal", choice);
 
-				Loaded_Board(pages, "normal", choice);
+		}
 
-			}
-
-			if (source == hard) {
-				Loaded_Board(pages, "hard", choice);
-			}
+		if (source == hard) {
+			Loaded_Board(pages, "hard", choice);
 		}
 	}
 

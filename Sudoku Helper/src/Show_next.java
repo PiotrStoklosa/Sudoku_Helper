@@ -8,7 +8,7 @@ public class Show_next extends JButton{
 
 	private static final long serialVersionUID = -741496727331836702L;
 
-	Show_next(){
+	public Show_next(){
 		super();
 		setText("Show next");
 		setFont(new Font("Arial", Font.BOLD, 25));

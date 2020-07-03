@@ -6,11 +6,28 @@ import javax.swing.JLabel;
 public class Timer extends JLabel {
 
 	private static final long serialVersionUID = -505480415486575848L;
-	int minutes = 0;
-	int seconds = 0;
-	Timer instance = this;
-	boolean state = true;
-	Timer (Observer observer){
+	private int minutes = 0;
+	private int seconds = 0;
+	private Timer instance = this;
+	private boolean state = true;
+	
+	public int getMinutes() {
+		return minutes;
+	}
+
+	public int getSeconds() {
+		return seconds;
+	}
+	
+	protected void setMinutes(int minutes) {
+		this.minutes = minutes;
+	}
+
+	protected void setSeconds(int seconds) {
+		this.seconds = seconds;
+	}
+
+	public Timer (Observer observer){
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {

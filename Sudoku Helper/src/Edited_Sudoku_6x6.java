@@ -5,7 +5,7 @@ public class Edited_Sudoku_6x6 extends Sudoku_6x6 {
 
 	private static final long serialVersionUID = 2223420529538466415L;
 
-	Edited_Sudoku_6x6() {
+	public Edited_Sudoku_6x6() {
 
 		super("edit");
 

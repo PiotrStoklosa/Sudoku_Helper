@@ -7,7 +7,7 @@ public class Create_Menu extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1562768394257804581L;
 
-	JButton ClassicSudoku, Sudoku6x6;
+	private JButton ClassicSudoku, Sudoku6x6;
 	
 	private static Create_Menu singleton_instance = null; 
 	
@@ -38,7 +38,9 @@ public class Create_Menu extends JFrame implements ActionListener{
 		Sudoku6x6.addActionListener(this);
 		
 	}
-
+	/*
+	 * singleton (only one instance)
+	 */
 	public static Create_Menu getInstance() {
 	      if (singleton_instance == null)
 	    	  singleton_instance = new Create_Menu();

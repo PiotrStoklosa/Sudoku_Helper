@@ -9,12 +9,16 @@ public class Sudoku_6x6 extends Board implements ActionListener, MouseListener{
 	
 	private static final long serialVersionUID = -5612397801562800499L;
 
-	Sudoku_6x6(String role) {
-
+	public Sudoku_6x6(String role) {
+		/*
+		 * create the board 6 x 6 with blocks 3 x 2
+		 */
 		super(6, 3, 2, role);
-
+		
 		setCountertoNull();
-
+		/*
+		 * draw a board
+		 */
 		for (int i = 0; i < getNumberofBlocks(); i++)
 			for (int j = 0; j < getNumberofBlocks(); j++) {
 
@@ -29,8 +33,9 @@ public class Sudoku_6x6 extends Board implements ActionListener, MouseListener{
 				setBorder_left(3);
 				setBorder_top(3);
 				setBorder_bottom(3);
-				// set appropriate borders to board
-
+				/*
+				 * set appropriate borders
+				 */
 				if (j == 2 )
 					setBorder_right(5);
 
@@ -54,7 +59,9 @@ public class Sudoku_6x6 extends Board implements ActionListener, MouseListener{
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
+		/*
+		 * after a click you can select an appropriate number in the new window
+		 */
 		Object source = e.getSource();
 		if (!isFinished()) {
 

@@ -12,19 +12,21 @@ import javax.swing.JTextField;
 public class Saved_Sudoku extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = -6291472736114097561L;
-	String board = "";
-	String type;
-	String name;
-	JTextField field;
-	JLabel info;
-	String minutes;
-	String seconds;
-	String mistakes;
+	private String board = "";
+	private String type;
+	private String name;
+	private JTextField field;
+	private JLabel info;
+	private String minutes;
+	private String seconds;
+	private String mistakes;
 	
-	Saved_Sudoku(String type, Board board){
-		
+	public Saved_Sudoku(String type, Board board){
+		/*
+		 * create a string to save board
+		 */
 		for (int i=0; i< board.getNumberofBlocks() * board.getNumberofBlocks(); i++) {
-			if (board.Block[i].empty) 
+			if (board.Block[i].getEmpty()) 
 				this.board += "0 ";
 			
 			else {
@@ -34,9 +36,9 @@ public class Saved_Sudoku extends JFrame implements ActionListener{
 			
 		}
 		
-		minutes = Integer.toString(board.timer.minutes);
-		seconds = Integer.toString(board.timer.seconds);
-		mistakes = Integer.toString(board.mistakes.Current_errors);
+		minutes = Integer.toString(board.timer.getMinutes());
+		seconds = Integer.toString(board.timer.getSeconds());
+		mistakes = Integer.toString(board.mistakes.getCurrent_errors());
 		
 		
 		this.type = type;
@@ -62,6 +64,9 @@ public class Saved_Sudoku extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		/*
+		 * load all saves and add new one
+		 */
 		name = field.getText();
 		
 		String save = finished();
@@ -93,7 +98,9 @@ public class Saved_Sudoku extends JFrame implements ActionListener{
 		
 		dispose();
 	}
-	
+	/*
+	 * form of save board
+	 */
 	String finished() {
 		return name + " " + type + " " + minutes + " " + seconds + " " + mistakes + " " + board + '\n';
 	}

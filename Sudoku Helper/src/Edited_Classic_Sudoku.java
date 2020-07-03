@@ -5,7 +5,7 @@ public class Edited_Classic_Sudoku extends Classic_Sudoku {
 
 	private static final long serialVersionUID = 2223420529538466415L;
 
-	Edited_Classic_Sudoku() {
+	public Edited_Classic_Sudoku() {
 
 		super("edit");
 
@@ -29,6 +29,5 @@ public class Edited_Classic_Sudoku extends Classic_Sudoku {
 					select.setVisible(true);
 				}
 			}
-
 	}
 }

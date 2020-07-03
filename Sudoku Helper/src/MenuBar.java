@@ -6,9 +6,9 @@ public class MenuBar extends JMenuBar{
 
 	private static final long serialVersionUID = -6682723460371369300L;
 
-	JMenu Options;
+	private JMenu Options;
 
-	JMenuItem Save, Load, Restart, Main_Menu;
+	protected JMenuItem Save, Load, Restart, Main_Menu;
 
 	public MenuBar() {
 		super();

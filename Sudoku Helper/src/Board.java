@@ -20,11 +20,8 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 	private int border_right, border_left, border_top, border_bottom;
 	private int counter;
 	private boolean finished;
-	private String role;
 	protected MenuBar Bar;
-
 	protected Sudoku_Block[] Block;
-
 	protected Candidates Candidate;
 	protected Hint hint;
 	protected Info info;
@@ -111,12 +108,11 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 	 * Main constructor
 	 */
 
-	Board(int NumberofBlocks, int block_width, int block_height, String role) {
+	public Board(int NumberofBlocks, int block_width, int block_height, String role) {
 
 		setLayout(null);
 		setFocusable(true);
 		finished = false;
-		this.role = role;
 		index_in_file = -1;
 
 		Block = new Sudoku_Block[NumberofBlocks * NumberofBlocks];
@@ -183,7 +179,6 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		info.setBounds(30, 510, 500, 150);
 
 	}
-
 	/*
 	 * if end of time (observer)
 	 */
@@ -194,20 +189,21 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		info.setText("End of time!");
 
 	}
+
 	/*
 	 * Method for updating candidates after enter a number
 	 */
-	public void Candidates_Update(int number, int x, int y) {
+	protected void Candidates_Update(int number, int x, int y) {
 		/*
 		 * Updating candidates in row
 		 */
 		for (int i = x * NumberofBlocks; i < x * NumberofBlocks + NumberofBlocks; i++)
-			Block[i].All_Candidates[number] = false;
+			Block[i].setAll_Candidates_number(number, false);
 		/*
 		 * Updating candidates in column
 		 */
 		for (int i = y; i < NumberofBlocks * NumberofBlocks; i += NumberofBlocks)
-			Block[i].All_Candidates[number] = false;
+			Block[i].setAll_Candidates_number(number, false);
 		/*
 		 * Updating candidates in the block
 		 */
@@ -216,9 +212,10 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 
 		for (int j = 0; j < block_height; j++)
 			for (int k = 0; k < block_width; k++)
-				Block[(first_block_row + j) * NumberofBlocks + first_block_column + k].All_Candidates[number] = false;
+				Block[(first_block_row + j) * NumberofBlocks + first_block_column + k].setAll_Candidates_number(number, false);
 
 	}
+
 	/*
 	 * If win
 	 */
@@ -227,6 +224,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		finished = true;
 		timer.off();
 	}
+
 	/*
 	 * If lose
 	 */
@@ -236,9 +234,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		timer.off();
 	}
 
-	/* Method Hidden_Single (one function for finding, one for returning)
-	*
-	*/
+	/*
+	 * Method Hidden_Single Searching hidden single
+	 */
 	public Hidden_Single HiddenSingle() {
 
 		for (int i = 0; i < NumberofBlocks / block_height; i++) { // block row
@@ -247,13 +245,13 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 
 					int counter = 0;
 
-					for (int l = 0; l < block_height; l++) { // row in block
-						for (int m = 0; m < block_width; m++) { // column in block
+					for (int l = 0; l < block_height; l++) { // row in the block
+						for (int m = 0; m < block_width; m++) { // column in the block
 
 							if (Block[i * NumberofBlocks * block_height + j * block_width + l * NumberofBlocks + m]
 									.getEmpty()
 									&& Block[i * NumberofBlocks * block_height + j * block_width + l * NumberofBlocks
-											+ m].All_Candidates[k])
+											+ m].getAll_Candidates()[k])
 								counter++;
 						}
 					}
@@ -272,7 +270,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 
 				for (int k = 0; k < NumberofBlocks; k++) {
 
-					if (Block[i * NumberofBlocks + k].getEmpty() && Block[i * NumberofBlocks + k].All_Candidates[j])
+					if (Block[i * NumberofBlocks + k].getEmpty() && Block[i * NumberofBlocks + k].getAll_Candidates()[j])
 						counter++;
 				}
 
@@ -289,7 +287,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 
 				for (int k = 0; k < NumberofBlocks; k++) {
 
-					if (Block[i + k * NumberofBlocks].getEmpty() && Block[i + k * NumberofBlocks].All_Candidates[j])
+					if (Block[i + k * NumberofBlocks].getEmpty() && Block[i + k * NumberofBlocks].getAll_Candidates()[j])
 						counter++;
 				}
 
@@ -302,6 +300,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		return new Hidden_Single();
 	}
 
+	/*
+	 * Method Hidden_Single Searching hidden single in particular area
+	 */
 	public Hidden_Single HiddenSingle(String place, int index, int number, int block) {
 
 		Hidden_Single single = new Hidden_Single();
@@ -310,7 +311,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 
 			for (int i = index * NumberofBlocks; i < index * NumberofBlocks + NumberofBlocks; i++) {
 
-				if (Block[i].getEmpty() && Block[i].All_Candidates[number] == true) {
+				if (Block[i].getEmpty() && Block[i].getAll_Candidates()[number] == true) {
 
 					single.setHidden_Single("row", index, i % NumberofBlocks, number);
 					return single;
@@ -321,7 +322,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 
 			for (int i = index; i < NumberofBlocks * NumberofBlocks; i += NumberofBlocks) {
 
-				if (Block[i].getEmpty() && Block[i].All_Candidates[number] == true) {
+				if (Block[i].getEmpty() && Block[i].getAll_Candidates()[number] == true) {
 
 					single.setHidden_Single("column", i / NumberofBlocks, index, number);
 					return single;
@@ -332,12 +333,12 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 			int first_block_row = block - block % block_height;
 			int first_block_column = (block % block_height) * block_width;
 
-			for (int i = 0; i < block_height; i++) { // row in block
-				for (int j = 0; j < block_width; j++) { // column in block
+			for (int i = 0; i < block_height; i++) { // row in the block
+				for (int j = 0; j < block_width; j++) { // column in the block
 
 					if (Block[(first_block_row + i) * NumberofBlocks + first_block_column + j].getEmpty()
 							&& Block[(first_block_row + i) * NumberofBlocks + first_block_column
-									+ j].All_Candidates[number] == true) {
+									+ j].getAll_Candidates()[number] == true) {
 
 						single.setHidden_Single("block", first_block_row + i, first_block_column + j, number);
 						return single;
@@ -349,9 +350,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		return single;
 	}
 
-	// Method Naked_Single (one function for finding, one for counting possible
-	// digits)
-
+	/*
+	 * Method Naked_Single Searching naked single
+	 */
 	public Naked_Single NakedSingle() {
 
 		int counter;
@@ -365,7 +366,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 				if (counter == 1 && Block[i * NumberofBlocks + j].getEmpty()) {
 
 					for (int k = 0; k < NumberofBlocks; k++) {
-						if (Block[i * NumberofBlocks + j].All_Candidates[k])
+						if (Block[i * NumberofBlocks + j].getAll_Candidates()[k])
 							single.setNaked_Single(i, j, k);
 					}
 
@@ -378,20 +379,27 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		return single;
 	}
 
+	/*
+	 * Digit counter
+	 */
 	public int Count_Possible_Digits(int field) {
 
 		int counter = 0;
 
 		for (int i = 0; i < NumberofBlocks; i++) {
 
-			if (Block[field].All_Candidates[i])
+			if (Block[field].getAll_Candidates()[i])
 				counter++;
 		}
 
 		return counter;
 	}
 
-	public void next(String method, String place, int row, int column, int digit) {
+	/*
+	 * Updating info and some blocks when detect next step (after clicking the
+	 * appropriate button)
+	 */
+	public void next_step(String method, String place, int row, int column, int digit) {
 
 		int block_index = row * NumberofBlocks + column;
 
@@ -407,7 +415,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		Candidates_Update(digit - 1, row, column);
 
 		Block[block_index].enabled = !Block[block_index].enabled;
-		Block[block_index].empty = false;
+		Block[block_index].setEmpty(false);
 		Block[block_index].setFont(new Font("Arial", Font.BOLD, 30));
 
 		if (++counter == NumberofBlocks * NumberofBlocks)
@@ -421,7 +429,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 		Object source = e.getSource();
 
 		if (source == Candidate) {
-
+			/*
+			 * Switch to inserting numbers as candidates or numbers
+			 */
 			if (Candidate.on_off)
 				Candidate.setText("Candidates off");
 
@@ -431,7 +441,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 			Candidate.on_off = !Candidate.on_off;
 
 		} else if (source == hint) {
-
+			/*
+			 * Inform about next step
+			 */
 			if (!finished) {
 
 				Hidden_Single if_hidden = HiddenSingle();
@@ -439,7 +451,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 				if (if_hidden.getfound())
 					info.setText("<html>Hidden single: Exist one field in "
 							+ if_hidden.info_place_Hidden_Single(block_width, block_height) + "where number "
-							+ if_hidden.digit + " can be written!</html>");
+							+ if_hidden.getDigit() + " can be written!</html>");
 
 				else {
 
@@ -455,21 +467,23 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 			}
 
 		} else if (source == show_next) {
-
+			/*
+			 * Show next step
+			 */
 			if (!finished) {
 
 				Hidden_Single if_hidden = HiddenSingle();
 
 				if (if_hidden.getfound())
-					next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height), if_hidden.row,
-							if_hidden.column, if_hidden.digit);
+					next_step("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height),
+							if_hidden.getRow(), if_hidden.getColumn(), if_hidden.getDigit());
 
 				else {
 
 					Naked_Single if_naked = NakedSingle();
 
 					if (if_naked.getfound())
-						next("Naked single", "", if_naked.row, if_naked.column, if_naked.digit);
+						next_step("Naked single", "", if_naked.row, if_naked.column, if_naked.digit);
 
 					else
 						info.setText("I didn't find any hint!");
@@ -478,22 +492,25 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 			}
 
 		} else if (source == solve) {
-
+			/*
+			 * Show the next steps until sudoku is finished or the program cannot find the
+			 * next step
+			 */
 			if (!finished) {
 
 				do {
 					Hidden_Single if_hidden = HiddenSingle();
 
 					if (if_hidden.getfound())
-						next("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height),
-								if_hidden.row, if_hidden.column, if_hidden.digit);
+						next_step("Hidden single", if_hidden.info_place_Hidden_Single(block_width, block_height),
+								if_hidden.getRow(), if_hidden.getColumn(), if_hidden.getDigit());
 
 					else {
 
 						Naked_Single if_naked = NakedSingle();
 
 						if (if_naked.getfound())
-							next("Naked single", "", if_naked.row, if_naked.column, if_naked.digit);
+							next_step("Naked single", "", if_naked.row, if_naked.column, if_naked.digit);
 
 						else
 							info.setText("I didn't find any hint!");
@@ -503,7 +520,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 				} while (!finished && info.getText() != "I didn't find any hint!");
 			}
 		} else if (source == finish) {
-
+			/*
+			 * Finish edition and change view from editor to playable board
+			 */
 			Board game = null;
 
 			if (this instanceof Sudoku_6x6)
@@ -512,14 +531,14 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 				game = new Classic_Sudoku("play");
 
 			for (int i = 0; i < this.NumberofBlocks * this.NumberofBlocks; i++) {
-				if (!Block[i].empty) {
+				if (!Block[i].getEmpty()) {
 					int digit = Integer.parseInt(Block[i].getText());
 					digit--;
 					game.Block[i].setText(Block[i].getText());
 					game.Candidates_Update(digit, i / this.NumberofBlocks, i % this.NumberofBlocks);
 
 					game.counter++;
-					game.Block[i].empty = false;
+					game.Block[i].setEmpty(false);
 					game.info.setText("Info");
 					game.Block[i].setBackground(Color.white);
 					game.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
@@ -532,6 +551,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 			game.setVisible(true);
 			dispose();
 		} else if (source == show_solution) {
+			/*
+			 * Show solution if this board has its completed copy in the file
+			 */
 			if (index_in_file == -1)
 				info.setText("I can't find solution in file!");
 			else {
@@ -552,7 +574,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 				String[] load = pages.get(index_in_file + 1).split(" ");
 
 				for (int i = 0; i < NumberofBlocks * NumberofBlocks; i++) {
-					if (Block[i].empty) {
+					if (Block[i].getEmpty()) {
 
 						Block[i].setText(load[i]);
 						Block[i].setBackground(Color.blue);
@@ -567,12 +589,18 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 				timer.off();
 			}
 		} else if (source == Bar.Main_Menu) {
+			/*
+			 * return to main menu
+			 */
 			Main_menu menu = Main_menu.getInstance();
 			;
 			menu.setVisible(true);
 			menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			dispose();
 		} else if (source == Bar.Restart) {
+			/*
+			 * Restart the game if this board has its base in the file
+			 */
 			if (index_in_file == -1) {
 				info.setText("I didnt find oryginal version of this sudoku!");
 			} else {
@@ -605,7 +633,7 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 						board.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
 						board.Block[i].setForeground(Color.black);
 						board.Block[i].enabled = !Block[i].enabled;
-						board.Block[i].empty = false;
+						board.Block[i].setEmpty(false);
 						board.counter++;
 						board.index_in_file = index_in_file;
 						board.Candidates_Update(Integer.parseInt(load[i]) - 1, i / board.NumberofBlocks,
@@ -618,6 +646,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 				dispose();
 			}
 		} else if (source == Bar.Save) {
+			/*
+			 * open a window where you can save the game
+			 */
 			Saved_Sudoku save;
 			if (this instanceof Classic_Sudoku)
 				save = new Saved_Sudoku("Classic_Sudoku", this);
@@ -627,7 +658,9 @@ public abstract class Board extends JFrame implements ActionListener, Methods, O
 			save.setVisible(true);
 
 		} else if (source == Bar.Load) {
-
+			/*
+			 * open a window where you can load the game
+			 */
 			Load load = null;
 
 			try {

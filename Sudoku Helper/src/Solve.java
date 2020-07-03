@@ -8,7 +8,7 @@ public class Solve extends JButton{
 
 	private static final long serialVersionUID = -700269828484033561L;
 
-	Solve(){
+	public Solve(){
 		super();
 		setText("Solve");
 		setFont(new Font("Arial", Font.BOLD, 25));

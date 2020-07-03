@@ -6,7 +6,7 @@ public class Hint_Label extends JLabel {
 
 	private static final long serialVersionUID = -4307241569119521160L;
 
-	Hint_Label() {
+	public Hint_Label() {
 		
 		super();
 		setFont(new Font("Arial", Font.BOLD, 25));

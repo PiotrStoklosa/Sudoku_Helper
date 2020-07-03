@@ -7,7 +7,7 @@ public class Main_menu extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 8386246453907190702L;
 	
-	JButton play, create, exit;
+	private JButton play, create, exit;
 	
 	private static Main_menu singleton_instance = null;
 
@@ -39,7 +39,9 @@ public class Main_menu extends JFrame implements ActionListener {
 		exit.addActionListener(this);
 		
 	}
-
+	/*
+	 * singleton (only one instance)
+	 */
 	public static Main_menu getInstance() {
 	      if (singleton_instance == null)
 	    	  singleton_instance = new Main_menu();

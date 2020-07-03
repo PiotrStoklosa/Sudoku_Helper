@@ -8,11 +8,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -20,20 +18,15 @@ public class Load extends JFrame {
 
 	private static final long serialVersionUID = 1260906524026586088L;
 	
-	Board board;
-	JPanel panel;
-	DefaultListModel<String> model;
-	JList<String> load;
-	JLabel info;
-	JSplitPane splitPane;
+	private JPanel panel;
+	private DefaultListModel<String> model;
+	private JList<String> load;
 
-	Load(Board board) throws IOException {
+	public Load(Board board) throws IOException {
 
-		this.board = board;
 		panel = new JPanel();
 		model = new DefaultListModel<>();
 		load = new JList<>();
-		info = new JLabel();
 		setTitle("Load");
 
 		load.setModel(model);
@@ -42,24 +35,28 @@ public class Load extends JFrame {
 		setLocationRelativeTo(null);
 
 		add(panel);
-
+		/*
+		 * load all saves
+		 */
 		Path input = Paths.get("./Saves.txt");
 		final List<String> pages = Files.readAllLines(input, Charset.forName("UTF-8"));
-
+		/*
+		 * add all saves to list
+		 */
 		for (int i = 0; i < pages.size(); i++)
 			model.addElement(pages.get(i).split(" ")[0]);
-
+		
 		load.addListSelectionListener(new ListSelectionListener() {
-
+			
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				
 				Board loaded_sudoku;
 				String[] loaded_board = pages.get(load.getSelectedIndex()).split(" ");
 				String type = loaded_board[1];
-				
-				
-				
+				/*
+				 * load each element to board (time, mistakes, numbers)
+				 */	
 				if (type.equals("Classic_Sudoku")) 
 					loaded_sudoku = new Classic_Sudoku("play");
 				else
@@ -69,8 +66,8 @@ public class Load extends JFrame {
 				int seconds = Integer.parseInt(loaded_board[3]);
 				int mistakes = Integer.parseInt(loaded_board[4]);
 				
-				loaded_sudoku.timer.seconds = seconds;
-				loaded_sudoku.timer.minutes = minutes;
+				loaded_sudoku.timer.setSeconds(seconds);
+				loaded_sudoku.timer.setMinutes(minutes);
 				for (int i=0; i<mistakes; i++)
 					loaded_sudoku.mistakes.new_error();
 				
@@ -81,7 +78,7 @@ public class Load extends JFrame {
 						loaded_sudoku.Block[i].setFont(new Font("Arial", Font.BOLD, 30));
 						loaded_sudoku.Block[i].setForeground(Color.black);
 						loaded_sudoku.Block[i].enabled = !loaded_sudoku.Block[i].enabled;
-						loaded_sudoku.Block[i].empty= false;
+						loaded_sudoku.Block[i].setEmpty(false);
 						loaded_sudoku.IncreaseCounter();
 						loaded_sudoku.Candidates_Update(Integer.parseInt(loaded_board[i+5]) - 1, i / loaded_sudoku.getNumberofBlocks(),
 								i % board.getNumberofBlocks());
@@ -90,8 +87,7 @@ public class Load extends JFrame {
 				loaded_sudoku.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				board.dispose();	
 				dispose();
-			}
-				
+			}		
 		});
 	}
 }

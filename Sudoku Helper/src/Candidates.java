@@ -9,7 +9,7 @@ public class Candidates extends JButton {
 
 	boolean on_off = false;
 
-	Candidates() {
+	public Candidates() {
 		
 		super();
 		

@@ -19,15 +19,15 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 	private static final long serialVersionUID = 2349463119831675099L;
 
-	JButton[] Numbers;
-	Sudoku_Block buttoninstance;
-	Board board;
+	private JButton[] Numbers;
+	private Sudoku_Block buttoninstance;
+	private Board board;
 
-	int x;
-	int y;
-	String role;
+	private int x;
+	private int y;
+	private String role;
 
-	Number_Selector(int x, int y, Board board, String role) {
+	public Number_Selector(int x, int y, Board board, String role) {
 		this.x = x;
 		this.y = y;
 		this.board = board;
@@ -46,7 +46,9 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		setTitle("Select number");
 
 		Numbers = new JButton[board.getNumberofBlocks()];
-
+		/*
+		 * create appropriate quantity and layout of buttons
+		 */
 		for (int i = 0; i < Math.floor(Math.sqrt(board.getNumberofBlocks())); i++)
 			for (int j = 0; j < board.getNumberofBlocks() / Math.floor(Math.sqrt(board.getNumberofBlocks())); j++) {
 
@@ -59,23 +61,31 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 				Numbers[(int) (j * Math.floor(Math.sqrt(board.getNumberofBlocks())) + i)].addActionListener(this);
 			}
 	}
-
+	/*
+	 * test to check the correctness of inserted number
+	 */
 	public Blunder correct(int number) {
 
 		Blunder blunder = new Blunder();
-
+		/*
+		 * test in row
+		 */
 		for (int i = x * board.getNumberofBlocks(); i < x * board.getNumberofBlocks() + board.getNumberofBlocks(); i++) {
 
 			if (!board.Block[i].getEmpty() && Integer.parseInt(board.Block[i].getText()) == number)
 
 				return blunder.Made_Blunder(x, i % board.getNumberofBlocks());
 		}
-
+		/*
+		 * test in column
+		 */
 		for (int i = y; i < board.getNumberofBlocks() * board.getNumberofBlocks(); i += board.getNumberofBlocks())
 			if (!board.Block[i].getEmpty() && Integer.parseInt(board.Block[i].getText()) == number)
 
 				return blunder.Made_Blunder(i / board.getNumberofBlocks(), y);
-
+		/*
+		 * test in the block
+		 */
 		int first_block_row = x - x % board.getBlock_height();
 		int first_block_column = y - y % board.getBlock_width();
 
@@ -86,7 +96,9 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 								board.Block[(first_block_row + j) * board.getNumberofBlocks() + first_block_column + k]
 										.getText()) == number)
 					return blunder.Made_Blunder(first_block_row + j, first_block_column + k);
-
+		/*
+		 * if the board has the finished copy in the file, program compare both versions to detect a mistake
+		 */
 		if (board.getIndex_in_file() > -1) {
 
 			Path input = Paths.get("./boards.txt");
@@ -114,10 +126,12 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 		return blunder;
 	}
-
+	
 	public void if_candidates(int number) {
-		
-		buttoninstance.Player_Candidates[number] = !buttoninstance.Player_Candidates[number];
+		/*
+		 * if player insert a candidate
+		 */
+		buttoninstance.setPlayer_Candidates_number(number, !buttoninstance.getPlayer_Candidates()[number]);
 		buttoninstance.print();
 		board.info.setText("Info");
 		buttoninstance.setBackground(Color.white);
@@ -127,7 +141,9 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 
 		dispose();
 	}
-
+	/*
+	 * if player insert an incorrect number
+	 */
 	public void if_error(Blunder test, int number, String role) {
 
 		board.mistakes.new_error();
@@ -145,7 +161,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		Sudoku_Block.counter = !Sudoku_Block.counter;
 		
 		if (role.equals("play"))
-			if (board.mistakes.limit) {
+			if (board.mistakes.isLimit()) {
 				if (test.isCorrectness_not_defined())
 					board.info.setText("<html>Incorrect number!<br/> You reach maximum limit of mistakes!</html>");
 				else
@@ -160,10 +176,12 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		dispose();
 
 	}
-
+	/*
+	 * if player insert a correct number
+	 */
 	public void if_correct(int number) {
 
-		buttoninstance.empty = false;
+		buttoninstance.setEmpty(false);
 		board.info.setText("Info");
 		buttoninstance.setBackground(Color.white);
 		buttoninstance.setText(Integer.toString(number + 1));
@@ -173,7 +191,9 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 		dispose();
 
 	}
-
+	/*
+	 * two versions of picking a numbers (one from keyboard one from window)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 

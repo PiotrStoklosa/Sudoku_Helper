@@ -7,10 +7,20 @@ public class Mistakes extends JLabel {
 
 	private static final long serialVersionUID = -365624610982983246L;
 
-	int Errors_limit;
-	int Current_errors;
-	boolean limit;
+	private int Errors_limit;
+	private int Current_errors;
+	private boolean limit;
 
+	public int getCurrent_errors() {
+		return Current_errors;
+	}
+
+	public boolean isLimit() {
+		return limit;
+	}
+	/*
+	 * set appropriate info about mistakes
+	 */
 	private void Set_errors() {
 		this.setText("<html>Mistakes <br/> " + Current_errors + " / " + Errors_limit + "</html>");
 	}
@@ -29,8 +39,10 @@ public class Mistakes extends JLabel {
 		this.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.black));
 
 	}
-
-	void new_error() {
+	/*
+	 * create a new error
+	 */
+	public void new_error() {
 
 		Current_errors++;
 
@@ -39,4 +51,5 @@ public class Mistakes extends JLabel {
 
 		Set_errors();
 	}
+
 }

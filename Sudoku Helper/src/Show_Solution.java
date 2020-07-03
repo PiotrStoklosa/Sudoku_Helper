@@ -8,7 +8,7 @@ public class Show_Solution extends JButton{
 	
 	private static final long serialVersionUID = -9022316516627339811L;
 
-	Show_Solution() {
+	public Show_Solution() {
 		
 		super();
 		setText("Show solution");

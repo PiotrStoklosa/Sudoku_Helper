@@ -9,12 +9,16 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 
 	private static final long serialVersionUID = -5923595070988804248L;
 
-	Classic_Sudoku(String role) {
-
+	public Classic_Sudoku(String role) {
+		/*
+		 * create the board 9 x 9 with blocks 3 x 3
+		 */
 		super(9, 3, 3, role);
-
+		
 		setCountertoNull();
-
+		/*
+		 * draw a board
+		 */
 		for (int i = 0; i < getNumberofBlocks(); i++)
 			for (int j = 0; j < getNumberofBlocks(); j++) {
 
@@ -29,8 +33,9 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 				setBorder_left(3);
 				setBorder_top(3);
 				setBorder_bottom(3);
-				// set appropriate borders to board
-
+				/*
+				 * set appropriate borders
+				 */
 				if (j == 2 || j == 5)
 					setBorder_right(5);
 
@@ -56,6 +61,9 @@ public class Classic_Sudoku extends Board implements ActionListener, MouseListen
 	public void mouseClicked(MouseEvent e) {
 
 		Object source = e.getSource();
+		/*
+		 * after a click you can select an appropriate number in the new window
+		 */
 		if (!isFinished()) {
 
 			for (int i = 0; i < getNumberofBlocks(); i++)

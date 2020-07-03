@@ -17,10 +17,10 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -8191184212516234368L;
 
-	Board board;
-	JButton easy, normal, hard;
-	int amount = 2;
-	JComboBox<String> Type_of_Sudoku;
+	private Board board;
+	private JButton easy, normal, hard;
+	private int amount = 2;
+	private JComboBox<String> Type_of_Sudoku;
 
 	private static Menu_Difficulty_Level singleton_instance = null;
 
@@ -57,21 +57,30 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 		Type_of_Sudoku.addItem("Sudoku 6x6");
 		add(Type_of_Sudoku);
 	}
-
+	/*
+	 * singleton (only one instance)
+	 */
 	public static Menu_Difficulty_Level getInstance() {
 		if (singleton_instance == null)
 			singleton_instance = new Menu_Difficulty_Level();
 
 		return singleton_instance;
 	}
-
+	/*
+	 * load random board to play
+	 */
 	public void Loaded_Board(List<String> pages, String level, String type) {
 
 		Random random = new Random();
 		int offset = random.nextInt(amount);
-
+		/*
+		 * number is multiplied by 2, because every board in the file has finished version
+		 */
 		offset = 2 * offset + 1;
 		int index = 0;
+		/*
+		 * skip all boards that are not suitable for the player's choice
+		 */
 		while (!pages.get(index).equals(type))
 			index++;
 
@@ -79,11 +88,13 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 			index++;
 
 		index += offset;
-
+		
 		board.setIndex_in_file(index);
 
 		String[] load = pages.get(index).split(" ");
-
+		/*
+		 * load a board
+		 */
 		for (int i = 0; i < load.length; i++) {
 
 			int digit = Integer.parseInt(load[i]);
@@ -92,7 +103,7 @@ public class Menu_Difficulty_Level extends JFrame implements ActionListener {
 
 				board.Candidates_Update(digit - 1, i / board.getNumberofBlocks(), i % board.getNumberofBlocks());
 				board.IncreaseCounter();
-				board.Block[i].empty = false;
+				board.Block[i].setEmpty(false);
 				board.info.setText("Info");
 				board.Block[i].setBackground(Color.white);
 				board.Block[i].setText(Integer.toString(digit));

@@ -151,7 +151,7 @@ public class Number_Selector extends JFrame implements ActionListener, KeyListen
 			board.info.setText("<html>Incorrect number!</html>");
 		else
 			board.info.setText("<html>Incorrect number!<br/>In row:" + (test.GetX() + 1) + " column:" + (test.GetY() + 1)
-				+ " number " + (number + 1) + " already exist!</html>");
+				+ " number " + (number + 1) + " already exists!</html>");
 
 		buttoninstance.setBackground(Color.red);
 		buttoninstance.setFont(new Font("Arial", Font.BOLD, 30));

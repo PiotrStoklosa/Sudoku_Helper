@@ -119,4 +119,3 @@ At the moment the application is finished, but there are many things that could 
 
 #### for programmers:
 1. Implement MVC
-2. Break the classes into packages
